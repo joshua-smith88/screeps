@@ -1,8 +1,8 @@
 module.exports = {
     HARVESTER_ROOM_MAX: 10,
     BUILDER_ROOM_MAX: 5,
-    GUARD_ROOM_MAX: 5,
-    
+    GUARD_ROOM_MAX: 10,
+    GUARD_ROOM_PATROL: 5,
     
     SPAWN_ENERGY_CAPACITY: 300,
     MIN_UNIT_ENERGY: 190,

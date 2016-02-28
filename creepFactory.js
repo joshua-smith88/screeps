@@ -32,10 +32,11 @@ module.exports = {
                 creepRole = roles.HARVESTER;
             else if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX)
                 creepRole = roles.BUILDER;
-            else if (cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
+            else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL)
                 creepRole = roles.GUARD;
             
-            if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX * 2)
+            //if we are under attack, prioritize building more guards, and build up to the room max
+            if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 creepRole = roles.GUARD;
 
             if (creepRole) {
