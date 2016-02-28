@@ -1,6 +1,5 @@
 var settings = require('_Settings');
 var roles = require('creepRoles');
-var partsFactory = require('partsFactory');
 
 module.exports = { 
     ProcessQueue: function (cur_room, room_spawns, room_sources, construction_sites) {
