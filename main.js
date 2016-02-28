@@ -18,7 +18,8 @@ module.exports.loop = function () {
         var _extensions = [];
         var _towers = [];
         var _storages = [];
-        
+        var _hostiles = _room.find(FIND_HOSTILE_CREEPS);
+
         var structs = _room.find(FIND_MY_STRUCTURES);
         for(var i in structs) {
             if (structs[i].structureType == STRUCTURE_EXTENSION)
@@ -40,9 +41,11 @@ module.exports.loop = function () {
                         harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                         break;
                     case roles.BUILDER.value:
-                        _room.memory.builderCount++;
-                        _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
-                        builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
+                        if (_hostiles.length > 0) {
+                            _room.memory.builderCount++;
+                            _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
+                            builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
+                        }
                         break;
                     case roles.GUARD.value:
                         _room.memory.guardCount++;
@@ -60,5 +63,11 @@ module.exports.loop = function () {
         }
         
         factory.ProcessQueue(_room, _spawns, _sources, _constSites);
+        if (_hostiles.length > 0 && _towers.length > 0)
+        {
+            for(i = 0; i < _towers.length; i++) {
+                _towers[i].attack(_hostiles[0]);
+            }
+        }
     }
 }

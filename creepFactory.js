@@ -39,9 +39,9 @@ module.exports = {
                 creepRole = roles.GUARD;
 
             if (creepRole) {
-                creep.bodyParts = this.GetParts(creepRole, nrg);
-                creep.name = this.GetName(creepRole);
-                creep.memory = this.GetMemoryObj(room_sources, creepRole);
+                creep.bodyParts = GetParts(creepRole, nrg);
+                creep.name = GetName(creepRole);
+                creep.memory = GetMemoryObj(room_sources, creepRole);
                 if (spawn.canCreateCreep(creep.bodyParts) == OK)
                     spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
             }
@@ -56,35 +56,35 @@ module.exports = {
             case roles.GUARD:
                 return getGuardParts(nrg);
         }
-    },
-    GetName: function (role) {
+    }
+};
+
+function getHarvesterSource (sources) {
+    var i = Math.floor(Math.random() * sources.length);
+    return sources[i].id;
+}
+
+function GetMemoryObj(sources, creepRole) {
+    switch(creepRole) {
+        case roles.HARVESTER: 
+            return { role: creepRole, source: getHarvesterSource(sources) };
+            break;
+        case roles.BUILDER:
+            return { role: creepRole };
+            break;
+        case roles.GUARD:
+            return {role: creepRole };
+            break;
+    }
+}
+function GetName(role) {
     var result = '';
     var s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for(i = 0; i < 5; i++)
         result += s.charAt(Math.floor(Math.random() * s.length));
     
     return role.name + "_" + result;
-    },
-    GetMemoryObj: function(sources, creepRole) {
-        switch(creepRole) {
-            case roles.HARVESTER: 
-                return { role: creepRole, source: this.GetHarvesterSource(sources) };
-                break;
-            case roles.BUILDER:
-                return { role: creepRole };
-                break;
-            case roles.GUARD:
-                return {role: creepRole };
-                break;
-        }
-    },
-    GetHarvesterSource: function(sources) {
-        var i = Math.floor(Math.random() * sources.length);
-        return sources[i].id;
-    }
-};
-
-
+}
 
 function getBuilderParts(nrg) {
     if (nrg >= 250 && nrg <= 300)
