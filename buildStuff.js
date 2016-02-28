@@ -27,6 +27,9 @@ module.exports = {
         
         //need to rework this logic to prioritize properly
         //since it isn't working correctly right now, just return first site to reduce CPU
+        if (sites.length > 0 && creep.memory.task == tasks.UPGRADE_CONTROLLER)
+            creep.memory.task = tasks.BUILD_STRUCTURE;
+            
         for(i = 0; i < sites.length; i++) {
             if (sites[i].structureType == STRUCTURE_SPAWN)
                 return sites[i];
