@@ -1,33 +1,78 @@
-module.exports = function (creep, roomController, exts) {
-    var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
-    
-    if (creep.carry.energy == 0) {
-        var selectedExt;
-        for (var i in exts) {
-            if (selectedExt != null)
-                selectedExt = exts[i];
-            if (exts[i].energy > 0) {
-               selectedExt = exts[i];
+var tasks = require('creepTasks');
+
+module.exports = {
+    Work: function (creep, room, spawns, sites, storages, extensions) {
+        if (!creep.memory.task || creep.carry.energy == 0)
+            creep.memory.task = tasks.GATHER_ENERGY;
+        
+        if (creep.memory.task == tasks.GATHER_ENERGY)
+        {
+            gatherEnergy(creep, storages, extensions, spawns);
+            if (creep.carry.energy == creep.carryCapacity)
+            {
+                creep.memory.task = tasks.BUILD_STRUCTURE;
+            }
+        } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
+            if (creep.carry.energy == 0) {
+               creep.memory.task == tasks.GATHER_ENERGY;
+               gatherEnergy(creep, storages, extensions, spawns);
+            } else {
+                buildOrMove(creep, creep.memory.site);
             }
         }
-        if (selectedExt != null && selectedExt.energy === 0)
-            selectedExt = null;
-        
-        if (selectedExt != null) {
-            if (selectedExt.transferEnergy(creep) == ERR_NOT_IN_RANGE)
-                creep.moveTo(selectedExt);
-        } else {
-            if (Game.spawns.MOTHERLAND.transferEnergy(creep) == ERR_NOT_IN_RANGE)
-                creep.moveTo(Game.spawns.MOTHERLAND);
+    },
+    GetPreferredTarget: function(creep, sites, controller) {
+        //console.log("finding preferred build target");
+        for(i = 0; i < sites.length; i++) {
+            if (sites[i].structureType == STRUCTURE_SPAWN)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_STORAGE)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_TOWER)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_EXTENSION) 
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_RAMPART)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_WALL)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_ROAD)
+                return sites[i];
+        }
+        return controller;
+    }
+}
+
+function gatherEnergy(creep, storages, extensions, spawns) {
+    //console.log("Builder needs to gather energy...");
+    for(i = 0; i < storages.length; i++) {
+        if (storages[i].energy > 0) {
+            refillEnergyOrMove(creep, storages[i]);
+            return;
         }
     }
-    
-    if (targets.length > 0) {
-        if (creep.build(targets[0]) == ERR_NOT_IN_RANGE)
-            creep.moveTo(targets[0]);
+    for(i = 0; i < extensions.length; i++) {
+        if (extensions[i].energy > 0) {
+            refillEnergyOrMove(creep, extensions[i]);
+            return;
+        }
+    }
+    for(i = 0; i < spawns.length; i++) {
+        if (spawns[i].energy > 0) {
+            refillEnergyOrMove(creep, spawns[i]);
+            return;
+        }
+    }
+}
+function refillEnergyOrMove(creep, target) {
+    if (target.energy >= 5) {
+        if (target.transferEnergy(creep) == ERR_NOT_IN_RANGE)
+            creep.moveTo(target);   
     } else {
-        if (creep.upgradeController(roomController) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(roomController)
-        }
+        creep.moveTo(26, 26); //this prevents builders from stacking up on the spawn
     }
+}
+function buildOrMove(creep, targetSite) {
+    if (creep.build(targetSite) == ERR_NOT_IN_RANGE)
+        creep.moveTo(targetSite);
 }

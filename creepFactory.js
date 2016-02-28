@@ -5,7 +5,7 @@ var memFactory = require('getMemory');
 var partsFactory = require('partsFactory');
 
 module.exports = { 
-    ProcessQueue: function (cur_room, room_spawns, room_sources) {
+    ProcessQueue: function (cur_room, room_spawns, room_sources, construction_sites) {
         if (cur_room.energyAvailable < settings.MIN_UNIT_ENERGY)
             return;
             
