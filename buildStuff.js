@@ -26,7 +26,7 @@ module.exports = {
         //need to rework this logic to prioritize properly
         //since it isn't working correctly right now, just return first site to reduce CPU
         if (sites.length > 0)
-            return sites[i];
+            return sites[0];
 
         // for(i = 0; i < sites.length; i++) {
         //     if (sites[i].structureType == STRUCTURE_SPAWN)
