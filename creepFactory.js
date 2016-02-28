@@ -1,7 +1,5 @@
 var settings = require('_Settings');
 var roles = require('creepRoles');
-var getParts = require('getParts');
-var memFactory = require('getMemory');
 var partsFactory = require('partsFactory');
 
 module.exports = { 
