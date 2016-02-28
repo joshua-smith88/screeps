@@ -4,8 +4,6 @@ module.exports = {
     Work: function (creep, room, spawns, sites, storages, extensions) {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
-        
-        console.log(creep.memory.task);
        
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
@@ -46,7 +44,6 @@ module.exports = {
                 return sites[i];
         }
         creep.memory.task = tasks.UPGRADE_CONTROLLER;
-        console.log(creep.memory.task);
         return controller;
     }
 }
@@ -55,7 +52,6 @@ function upgrade_Controller(creep) {
         creep.moveTo(creep.memory.site);
 }
 function gatherEnergy(creep, storages, extensions, spawns) {
-    //console.log("Builder needs to gather energy...");
     for(i = 0; i < storages.length; i++) {
         if (storages[i].energy > 0) {
             refillEnergyOrMove(creep, storages[i]);
