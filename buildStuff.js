@@ -5,6 +5,8 @@ module.exports = {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
         
+        console.log(creep.memory.task);
+        
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
             gatherEnergy(creep, storages, extensions, spawns);
@@ -70,7 +72,7 @@ function gatherEnergy(creep, storages, extensions, spawns) {
     }
 }
 function refillEnergyOrMove(creep, target) {
-    if (target.energy >= 5) {
+    if (target.energy >= 1) {
         if (target.transferEnergy(creep) == ERR_NOT_IN_RANGE)
             creep.moveTo(target);   
     } else {
