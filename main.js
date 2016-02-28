@@ -5,7 +5,7 @@ var roles = require('creepRoles');
 
 var harvester = require('harvestStuff');
 var builder = require('buildStuff');
-var guardStuff = require('guardStuff');
+var guard = require('guardStuff');
 
 
 module.exports.loop = function () {
@@ -47,7 +47,7 @@ module.exports.loop = function () {
                         break;
                     case roles.GUARD.value:
                         _room.memory.guardCount++;
-                        guardStuff(_creeps[i]);
+                        guard.Work(_creeps[i]);
                         break;
                 }
             }
