@@ -5,8 +5,6 @@ module.exports = {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
         
-        console.log(creep.memory.task);
-        
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
             gatherEnergy(creep, storages, extensions, spawns);
@@ -29,25 +27,22 @@ module.exports = {
         
         //need to rework this logic to prioritize properly
         //since it isn't working correctly right now, just return first site to reduce CPU
-        if (sites.length > 0)
-            return sites[0];
-
-        // for(i = 0; i < sites.length; i++) {
-        //     if (sites[i].structureType == STRUCTURE_SPAWN)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_STORAGE)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_TOWER)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_EXTENSION) 
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_RAMPART)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_WALL)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_ROAD)
-        //         return sites[i];
-        // }
+        for(i = 0; i < sites.length; i++) {
+            if (sites[i].structureType == STRUCTURE_SPAWN)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_STORAGE)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_TOWER)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_EXTENSION) 
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_RAMPART)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_WALL)
+                return sites[i];
+            if (sites[i].structureType == STRUCTURE_ROAD)
+                return sites[i];
+        }
         creep.memory.tasks = tasks.UPGRADE_CONTROLLER;
         return controller;
     }
