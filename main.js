@@ -11,15 +11,15 @@ var guardStuff = require('guardStuff');
 module.exports.loop = function () {
     for(var r in Game.rooms) {
         var _room = Game.rooms[r];
-        var _creeps = _room.find(FIND_CREEPS);
+        var _creeps = _room.find(FIND_MY_CREEPS);
         var _spawns = _room.find(FIND_MY_SPAWNS);
         var _sources = _room.find(FIND_SOURCES);
-        var _constSites = _room.find(FIND_CONSTRUCTION_SITES);
+        var _constSites = _room.find(FIND_MY_CONSTRUCTION_SITES);
         var _extensions = [];
         var _towers = [];
         var _storages = [];
         
-        var structs = _room.find(FIND_STRUCTURES);
+        var structs = _room.find(FIND_MY_STRUCTURES);
         for(var i in structs) {
             if (structs[i].structureType == STRUCTURE_EXTENSION)
                 _extensions.push(structs[i]);
