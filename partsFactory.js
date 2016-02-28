@@ -14,8 +14,6 @@ module.exports = {
 }
 
 function getBuilderParts(nrg) {
-    return [WORK,CARRY,MOVE,MOVE];
-    
     if (nrg >= 250 && nrg <= 300)
         return [WORK, CARRY, MOVE, MOVE];
     else if (nrg >= 350 && nrg <= 400)
