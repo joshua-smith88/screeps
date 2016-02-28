@@ -32,7 +32,6 @@ module.exports.loop = function () {
         _room.memory.builderCount = 0;
         _room.memory.guardCount = 0;
         
-        var targetSite = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
         for(var i in _creeps) {
             if(_creeps[i].memory.role) {
                 switch(_creeps[i].memory.role.value) {
@@ -42,7 +41,7 @@ module.exports.loop = function () {
                         break;
                     case roles.BUILDER.value:
                         _room.memory.builderCount++;
-                        _creeps[i].memory.site = targetSite;
+                        _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
                         builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
                         break;
                     case roles.GUARD.value:

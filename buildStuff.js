@@ -5,6 +5,8 @@ module.exports = {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
         
+        console.log(creep.memory.task);
+       
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
             gatherEnergy(creep, storages, extensions, spawns);
@@ -43,7 +45,8 @@ module.exports = {
             if (sites[i].structureType == STRUCTURE_ROAD)
                 return sites[i];
         }
-        creep.memory.tasks = tasks.UPGRADE_CONTROLLER;
+        creep.memory.task = tasks.UPGRADE_CONTROLLER;
+        console.log(creep.memory.task);
         return controller;
     }
 }
