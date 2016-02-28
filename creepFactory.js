@@ -46,16 +46,6 @@ module.exports = {
                     spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
             }
         }
-    },
-    GetParts: function(role, nrg) {
-        switch(role) {
-            case roles.HARVESTER:
-                return getHarvesterParts(nrg);
-            case roles.BUILDER:
-                return getBuilderParts(nrg);
-            case roles.GUARD:
-                return getGuardParts(nrg);
-        }
     }
 };
 
@@ -75,6 +65,16 @@ function GetMemoryObj(sources, creepRole) {
         case roles.GUARD:
             return {role: creepRole };
             break;
+    }
+}
+function GetParts(role, nrg) {
+    switch(role) {
+        case roles.HARVESTER:
+            return getHarvesterParts(nrg);
+        case roles.BUILDER:
+            return getBuilderParts(nrg);
+        case roles.GUARD:
+            return getGuardParts(nrg);
     }
 }
 function GetName(role) {

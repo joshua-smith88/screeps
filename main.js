@@ -41,7 +41,7 @@ module.exports.loop = function () {
                         harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                         break;
                     case roles.BUILDER.value:
-                        if (_hostiles.length > 0) {
+                        if (_hostiles.length <= 0) {
                             _room.memory.builderCount++;
                             _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
                             builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
