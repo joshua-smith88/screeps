@@ -37,12 +37,13 @@ function getGuardParts(nrg) {
         return [ATTACK, TOUGH, MOVE, MOVE];
     else if (nrg >= 250 && nrg < 330)
         return [ATTACK, TOUGH, TOUGH, MOVE, MOVE, MOVE];
-    else if (nrg >= 330 && nrg < 440)
-        return [RANGED_ATTACK, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE];
-    else if (nrg >= 440 && nrg < 500)
-        return [RANGED_ATTACK, RANGED_ATTACK, TOUGH, MOVE, MOVE, MOVE];
-    else if (nrg >= 500 && nrg < 520)
-        return [RANGED_ATTACK, TOUGH, TOUGH, TOUGH, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-    else if (nrg >= 520)
-        return [RANGED_ATTACK, RANGED_ATTACK, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE];
+    else if (nrg >= 330 && nrg < 390)
+        return [ATTACK, ATTACK, TOUGH, MOVE, MOVE, MOVE];
+    else if (nrg >= 390 && nrg < 530)
+        return [ATTACK, RANGED_ATTACK, TOUGH, MOVE, MOVE, MOVE];
+    else if (nrg >= 530 && nrg < 650)
+        return [ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE];
+    else if (nrg >= 650)
+        return [ATTACK, RANGED_ATTACK, RANGED_ATTACK, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE];
+
 }

@@ -35,6 +35,9 @@ module.exports = {
             else if (cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 creepRole = roles.GUARD;
             
+            if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX * 2)
+                creepRole = roles.GUARD;
+
             if (creepRole) {
                 creep.bodyParts = partsFactory.GetParts(creepRole, nrg);
                 creep.name = GetName(creepRole);
