@@ -21,6 +21,8 @@ module.exports = {
             } else {
                 buildOrMove(creep, creep.memory.site);
             }
+        } else if (creep.memory.task == tasks.UPGRADE_CONTROLLER) {
+            upgrade_Controller(creep);
         }
     },
     GetPreferredTarget: function(creep, sites, controller) {
@@ -46,10 +48,14 @@ module.exports = {
         //     if (sites[i].structureType == STRUCTURE_ROAD)
         //         return sites[i];
         // }
+        creep.memory.tasks = tasks.UPGRADE_CONTROLLER;
         return controller;
     }
 }
-
+function upgrade_Controller(creep) {
+    if (creep.upgradeController(creep.memory.site) == ERR_NOT_IN_RANGE)
+        creep.moveTo(creep.memory.site);
+}
 function gatherEnergy(creep, storages, extensions, spawns) {
     //console.log("Builder needs to gather energy...");
     for(i = 0; i < storages.length; i++) {

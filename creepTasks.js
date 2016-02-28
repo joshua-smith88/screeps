@@ -4,5 +4,6 @@ module.exports = {
     RESTOCK_RESOURCE: 1,
     FILL_TOWERS: 2,
     GATHER_ENERGY: 3,
-    BUILD_STRUCTURE: 4
+    BUILD_STRUCTURE: 4,
+    UPGRADE_CONTROLLER: 5
 };
