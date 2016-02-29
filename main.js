@@ -37,18 +37,15 @@ module.exports.loop = function () {
             if(_creeps[i].memory.role) {
                 switch(_creeps[i].memory.role.value) {
                     case roles.HARVESTER.value:
-                        _room.memory.harvesterCount++;
                         harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                         break;
                     case roles.BUILDER.value:
                         if (_hostiles.length <= 0) {
-                            _room.memory.builderCount++;
                             _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
                             builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
                         }
                         break;
                     case roles.GUARD.value:
-                        _room.memory.guardCount++;
                         guard.Work(_creeps[i]);
                         break;
                 }
@@ -56,9 +53,23 @@ module.exports.loop = function () {
         }
         
         //remove old resources
-        for(var i in Memory.creeps) {
-            if(!Game.creeps[i]) {
-                delete Memory.creeps[i];
+        if (Memory.creeps.length != Game.creeps.length) {
+            for(var i in Memory.creeps) {
+                if(!Game.creeps[i]) {
+                    var role = Memory.creeps[i].memory.role;
+                    switch(role.value) {
+                        case roles.HARVESTER.value:
+                            _room.memory.harvesterCount--;
+                            break;
+                        case roles.BUILDER.value:
+                            _room.memory.builderCount--;
+                            break;
+                        case roles.GUARD.value:
+                            _room.memory.guardCount--;
+                            break;
+                    }
+                    delete Memory.creeps[i];
+                }
             }
         }
         

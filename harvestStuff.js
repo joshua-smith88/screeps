@@ -9,17 +9,16 @@ module.exports = {
         if (creep.memory.task == tasks.HARVEST_RESOURCE) {
             harvestResource(creep, source);
             
-            if (creep.carry.energy >= creep.carryCapacity) {
-                var tEnergy = 0;
-                var tCapacity = 0;
-                for(i = 0; i < towers.length; i++) {
-                    tEnergy += towers[i].energy;
-                    tCapacity += towers[i].energyCapacity;
-                }
-                
+            if (creep.carry.energy == creep.carryCapacity) {                
                 if (room.energyAvailable < room.energyCapacityAvailable) {
                     creep.memory.task = tasks.RESTOCK_RESOURCE;
-                } else if (tEnergy < tCapacity) {
+                } else {
+                    var tEnergy = 0;
+                    var tCapacity = 0;
+                    for(i = 0; i < towers.length; i++) {
+                        tEnergy += towers[i].energy;
+                        tCapacity += towers[i].energyCapacity;
+                    }
                     creep.memory.task = tasks.FILL_TOWERS;
                 }
             }

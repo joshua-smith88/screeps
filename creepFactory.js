@@ -42,8 +42,20 @@ module.exports = {
                 creep.bodyParts = GetParts(creepRole, nrg);
                 creep.name = GetName(creepRole);
                 creep.memory = GetMemoryObj(room_sources, creepRole);
-                if (spawn.canCreateCreep(creep.bodyParts) == OK)
+                if (spawn.canCreateCreep(creep.bodyParts) == OK) {
                     spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
+                    switch(creep.memory.role.value) {
+                        case roles.HARVESTER.value:
+                            _room.memory.harvesterCount++;
+                            break;
+                        case roles.BUILDER.value:
+                            _room.memory.builderCount++;
+                            break;
+                        case roles.GUARD.value:
+                            _room.memory.guardCount++;
+                            break;
+                    }
+                }
             }
         }
     }

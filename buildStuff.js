@@ -5,20 +5,10 @@ module.exports = {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
        
-        if (creep.memory.task == tasks.GATHER_ENERGY)
-        {
+        if (creep.memory.task == tasks.GATHER_ENERGY) {
             gatherEnergy(creep, storages, extensions, spawns);
-            if (creep.carry.energy == creep.carryCapacity)
-            {
-                creep.memory.task = tasks.BUILD_STRUCTURE;
-            }
         } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
-            if (creep.carry.energy == 0) {
-               creep.memory.task == tasks.GATHER_ENERGY;
-               gatherEnergy(creep, storages, extensions, spawns);
-            } else {
-                buildOrMove(creep, creep.memory.site);
-            }
+            buildOrMove(creep, creep.memory.site);
         } else if (creep.memory.task == tasks.UPGRADE_CONTROLLER) {
             upgrade_Controller(creep);
         }
@@ -27,27 +17,32 @@ module.exports = {
         
         //need to rework this logic to prioritize properly
         //since it isn't working correctly right now, just return first site to reduce CPU
-        if (sites.length > 0 && creep.memory.task == tasks.UPGRADE_CONTROLLER)
+        if (sites.length > 0 && creep.memory.task == tasks.UPGRADE_CONTROLLER) {
             creep.memory.task = tasks.BUILD_STRUCTURE;
-            
-        for(i = 0; i < sites.length; i++) {
-            if (sites[i].structureType == STRUCTURE_SPAWN)
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_STORAGE)
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_TOWER)
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_EXTENSION) 
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_RAMPART)
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_WALL)
-                return sites[i];
-            if (sites[i].structureType == STRUCTURE_ROAD)
-                return sites[i];
+            return sites[0];
+        } else if (sites.length == 0) {
+            creep.memory.task = tasks.UPGRADE_CONTROLLER;
+            return controller;
         }
-        creep.memory.task = tasks.UPGRADE_CONTROLLER;
-        return controller;
+
+        // for(i = 0; i < sites.length; i++) {
+        //     if (sites[i].structureType == STRUCTURE_SPAWN)
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_STORAGE)
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_TOWER)
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_EXTENSION) 
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_RAMPART)
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_WALL)
+        //         return sites[i];
+        //     if (sites[i].structureType == STRUCTURE_ROAD)
+        //         return sites[i];
+        // }
+        // creep.memory.task = tasks.UPGRADE_CONTROLLER;
+        // return controller;
     }
 }
 function upgrade_Controller(creep) {
