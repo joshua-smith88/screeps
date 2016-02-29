@@ -1,16 +1,20 @@
 var tasks = require('creepTasks');
 
 module.exports = {
-    Work: function (creep, room, spawns, sites, storages, extensions) {
+    Work: function (creep, room, spawns, sites, storages, extensions, towers) {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
-       
+        
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
-            gatherEnergy(creep, storages, extensions, spawns);
-            if (creep.carry.energy == creep.carryCapacity)
-            {
+            if (room.energyAvailable <= 1 && creep.carry.energy > 0) {
                 creep.memory.task = tasks.BUILD_STRUCTURE;
+            } else {
+                gatherEnergy(creep, storages, extensions, spawns);
+                if (creep.carry.energy == creep.carryCapacity)
+                {
+                    creep.memory.task = tasks.BUILD_STRUCTURE;
+                }
             }
         } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
             if (creep.carry.energy == 0) {
@@ -61,7 +65,7 @@ function upgrade_Controller(creep) {
     if (creep.upgradeController(creep.memory.site) == ERR_NOT_IN_RANGE)
         creep.moveTo(creep.memory.site);
 }
-function gatherEnergy(creep, storages, extensions, spawns) {
+function gatherEnergy(creep, storages, extensions, spawns, towers) {
     for(i = 0; i < storages.length; i++) {
         if (storages[i].energy > 0) {
             refillEnergyOrMove(creep, storages[i]);
@@ -77,6 +81,12 @@ function gatherEnergy(creep, storages, extensions, spawns) {
     for(i = 0; i < spawns.length; i++) {
         if (spawns[i].energy > 0) {
             refillEnergyOrMove(creep, spawns[i]);
+            return;
+        }
+    }
+    for (i = 0; i < towers.length; i++) {
+        if (towers[i].energy > towers[i].energyCapacity / 2) {
+            refillEnergyOrMove(creep, towers[i]);
             return;
         }
     }

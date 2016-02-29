@@ -58,7 +58,7 @@ module.exports.loop = function () {
                             _room.memory.builderCount++;
                         if (_hostiles.length <= 0) {
                             _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
-                            builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
+                            builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions, _towers);
                         }
                         break;
                     case roles.GUARD.value:
