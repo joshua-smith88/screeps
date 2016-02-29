@@ -37,19 +37,33 @@ module.exports.loop = function () {
         if (_room.memory.guardCount === undefined)
             _room.memory.guardCount = 0;
         
+        var updateCounts = false;
+        if (_room.memory.harvesterCount < 0 || _room.memory.builderCount < 0 || _room.memory.guardCount < 0) {
+            _room.memory.harvesterCount = 0;
+            _room.memory.builderCount = 0;
+            _room.memory.guardCount = 0;
+            updateCounts = true;
+        }
+        
         for(var i in _creeps) {
             if(_creeps[i].memory.role) {
                 switch(_creeps[i].memory.role.value) {
                     case roles.HARVESTER.value:
+                        if (updateCounts === true)
+                            _room.memory.harvesterCount++;
                         harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                         break;
                     case roles.BUILDER.value:
+                        if (updateCounts === true)
+                            _room.memory.builderCount++;
                         if (_hostiles.length <= 0) {
                             _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
                             builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions);
                         }
                         break;
                     case roles.GUARD.value:
+                        if (updateCounts === true)
+                            _room.memory.guardCount++;
                         guard.Work(_creeps[i]);
                         break;
                 }
@@ -57,23 +71,22 @@ module.exports.loop = function () {
         }
         
         //remove old resources
-        if (Memory.creeps.length != Game.creeps.length) {
-            for(var i in Memory.creeps) {
-                if(!Game.creeps[i]) {
-                    var role = Memory.creeps[i].memory.role;
-                    switch(role.value) {
-                        case roles.HARVESTER.value:
-                            _room.memory.harvesterCount--;
-                            break;
-                        case roles.BUILDER.value:
-                            _room.memory.builderCount--;
-                            break;
-                        case roles.GUARD.value:
-                            _room.memory.guardCount--;
-                            break;
-                    }
-                    delete Memory.creeps[i];
+        for(var i in Memory.creeps) {
+            var creep = Memory.creeps[i];
+            if(!Game.creeps[i]) {
+                var role = creep.role.value;
+                switch(role) {
+                    case roles.HARVESTER.value:
+                        _room.memory.harvesterCount--;
+                        break;
+                    case roles.BUILDER.value:
+                        _room.memory.builderCount--;
+                        break;
+                    case roles.GUARD.value:
+                        _room.memory.guardCount--;
+                        break;
                 }
+                delete Memory.creeps[i];
             }
         }
         
