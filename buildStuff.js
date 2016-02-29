@@ -4,6 +4,9 @@ module.exports = {
     Work: function (creep, room, spawns, sites, storages, extensions) {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
+        else if (creep.memory.task == tasks.UPGRADE_CONTROLLER && sites.length > 0) {
+            creep.memory.task = tasks.GATHER_ENERGY;
+        }
        
         if (creep.memory.task == tasks.GATHER_ENERGY) {
             gatherEnergy(creep, storages, extensions, spawns);
