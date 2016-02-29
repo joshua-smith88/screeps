@@ -4,14 +4,21 @@ module.exports = {
     Work: function (creep, room, spawns, sites, storages, extensions) {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
-        else if (creep.memory.task == tasks.UPGRADE_CONTROLLER && sites.length > 0) {
-            creep.memory.task = tasks.GATHER_ENERGY;
-        }
        
-        if (creep.memory.task == tasks.GATHER_ENERGY) {
+        if (creep.memory.task == tasks.GATHER_ENERGY)
+        {
             gatherEnergy(creep, storages, extensions, spawns);
+            if (creep.carry.energy == creep.carryCapacity)
+            {
+                creep.memory.task = tasks.BUILD_STRUCTURE;
+            }
         } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
-            buildOrMove(creep, creep.memory.site);
+            if (creep.carry.energy == 0) {
+               creep.memory.task == tasks.GATHER_ENERGY;
+               gatherEnergy(creep, storages, extensions, spawns);
+            } else {
+                buildOrMove(creep, creep.memory.site);
+            }
         } else if (creep.memory.task == tasks.UPGRADE_CONTROLLER) {
             upgrade_Controller(creep);
         }
@@ -20,14 +27,16 @@ module.exports = {
         
         //need to rework this logic to prioritize properly
         //since it isn't working correctly right now, just return first site to reduce CPU
-        if (sites.length > 0 && creep.memory.task == tasks.UPGRADE_CONTROLLER) {
+        if (sites.length > 0 && creep.memory.task != tasks.BUILD_STRUCTURE) {
             creep.memory.task = tasks.BUILD_STRUCTURE;
+            return sites[0];
+        } else if (sites.length > 0) {
             return sites[0];
         } else if (sites.length == 0) {
             creep.memory.task = tasks.UPGRADE_CONTROLLER;
             return controller;
         }
-
+            
         // for(i = 0; i < sites.length; i++) {
         //     if (sites[i].structureType == STRUCTURE_SPAWN)
         //         return sites[i];
@@ -44,8 +53,7 @@ module.exports = {
         //     if (sites[i].structureType == STRUCTURE_ROAD)
         //         return sites[i];
         // }
-        // creep.memory.task = tasks.UPGRADE_CONTROLLER;
-        // return controller;
+
     }
 }
 function upgrade_Controller(creep) {
