@@ -29,9 +29,13 @@ module.exports.loop = function () {
             if (structs[i].structureType == STRUCTURE_STORAGE)
                 _storages.push(structs[i]);
         }
-        _room.memory.harvesterCount = 0;
-        _room.memory.builderCount = 0;
-        _room.memory.guardCount = 0;
+
+        if (_room.memory.harvesterCount === undefined)
+            _room.memory.harvesterCount = 0;
+        if (_room.memory.builderCount === undefined)
+            _room.memory.builderCount = 0;
+        if (_room.memory.guardCount === undefined)
+            _room.memory.guardCount = 0;
         
         for(var i in _creeps) {
             if(_creeps[i].memory.role) {
