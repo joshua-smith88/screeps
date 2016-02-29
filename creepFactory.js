@@ -46,13 +46,13 @@ module.exports = {
                     spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
                     switch(creep.memory.role.value) {
                         case roles.HARVESTER.value:
-                            _room.memory.harvesterCount++;
+                            cur_room.memory.harvesterCount++;
                             break;
                         case roles.BUILDER.value:
-                            _room.memory.builderCount++;
+                            cur_room.memory.builderCount++;
                             break;
                         case roles.GUARD.value:
-                            _room.memory.guardCount++;
+                            cur_room.memory.guardCount++;
                             break;
                     }
                 }
