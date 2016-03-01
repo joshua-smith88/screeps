@@ -31,11 +31,11 @@ module.exports.loop = function () {
         }
 
         if (_room.memory.harvesterCount === undefined)
-            _room.memory.harvesterCount = 0;
+            _room.memory.harvesterCount = -1;
         if (_room.memory.builderCount === undefined)
-            _room.memory.builderCount = 0;
+            _room.memory.builderCount = -1;
         if (_room.memory.guardCount === undefined)
-            _room.memory.guardCount = 0;
+            _room.memory.guardCount = -1;
         
         var updateCounts = false;
         if (_room.memory.harvesterCount < 0 || _room.memory.builderCount < 0 || _room.memory.guardCount < 0) {

@@ -1,9 +1,19 @@
 var tasks = require('creepTasks');
+var settings = require('_Settings');
 
 module.exports = {
     Work: function (creep, room, spawns, sites, storages, extensions, towers) {
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.GATHER_ENERGY;
+        
+        //this allows units to be created when we need them by not depleting the energy stores for building
+        if ((room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX ||
+            room.memory.builderCount < settings.BUILDER_ROOM_MAX ||
+            room.memory.guardCount < settings.GUARD_ROOM_PATROL) &&
+            creep.memory.task == tasks.GATHER_ENERGY &&
+            room.energyAvailable <= settings.MIN_HARVESTER_COST)
+            return;
+        
         
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
