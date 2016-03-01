@@ -5,7 +5,7 @@ module.exports = {
         var source = Game.getObjectById(creep.memory.source);
         if (!creep.memory.task || creep.carry.energy == 0)
             creep.memory.task = tasks.HARVEST_RESOURCE;
-        
+
         if (creep.memory.task == tasks.HARVEST_RESOURCE) {
             harvestResource(creep, source);
             
@@ -59,8 +59,7 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
         }
     }
     
-    //if we get here, there's nothing else to do but work on the controller.
-    moveOrRestock(creep, room.controller);
+    //creep.task = tasks.DELIVER_RESOURCE;
 }
 
 function moveOrRestock(creep, target) {

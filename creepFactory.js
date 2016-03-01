@@ -129,6 +129,23 @@ function GetName(role) {
 }
 
 function getBuilderParts(nrg) {
+    if (nrg >= 250 && nrg < 300) 
+        return [WORK, CARRY, MOVE];
+    if (nrg >= 300 && nrg <= 350)
+        return [WORK, WORK, CARRY, MOVE];
+    else if (nrg >= 350 && nrg <= 400)
+        return [WORK, WORK, CARRY, CARRY, MOVE];
+    else if (nrg >= 450 && nrg < 550)
+        return  [WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    else if (nrg >= 550 && nrg < 650)
+        return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    else if (nrg >= 650 && nrg < 750)
+        return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    else if (nrg >= 750)
+        return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+}
+
+function getHarvesterParts(nrg) {
     if (nrg >= 250 && nrg <= 300)
         return [WORK, CARRY, MOVE, MOVE];
     else if (nrg >= 350 && nrg <= 400)
@@ -141,10 +158,6 @@ function getBuilderParts(nrg) {
         return [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     else if (nrg >= 750)
         return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
-}
-
-function getHarvesterParts(nrg) {
-    return getBuilderParts(nrg);
 }
 
 function getGuardParts(nrg) {
