@@ -11,7 +11,7 @@ module.exports = {
             room.memory.builderCount < settings.BUILDER_ROOM_MAX ||
             room.memory.guardCount < settings.GUARD_ROOM_PATROL) &&
             creep.memory.task == tasks.GATHER_ENERGY &&
-            room.energyAvailable <= settings.MIN_HARVESTER_COST)
+            room.energyAvailable <= settings.MIN_UNIT_COST)
             return;
         
         
