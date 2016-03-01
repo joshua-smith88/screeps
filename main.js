@@ -19,6 +19,7 @@ module.exports.loop = function () {
         var _towers = [];
         var _storages = [];
         var _hostiles = _room.find(FIND_HOSTILE_CREEPS);
+        var _walls = [];
 
         var structs = _room.find(FIND_MY_STRUCTURES);
         for(var i in structs) {
@@ -28,6 +29,8 @@ module.exports.loop = function () {
                 _towers.push(structs[i]);
             if (structs[i].structureType == STRUCTURE_STORAGE)
                 _storages.push(structs[i]);
+            if (structs[i].structureType == "constructedWall")
+                _walls.push(structs[i]);
         }
 
         if (_room.memory.harvesterCount === undefined)
@@ -90,7 +93,7 @@ module.exports.loop = function () {
             }
         }
         
-        factory.ProcessQueue(_room, _spawns, _sources, _constSites);
+        factory.ProcessQueue(_creeps, _room, _spawns, _sources, _constSites);
         if (_hostiles.length > 0 && _towers.length > 0)
         {
             for(i = 0; i < _towers.length; i++) {

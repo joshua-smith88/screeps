@@ -2,7 +2,7 @@ var settings = require('_Settings');
 var roles = require('creepRoles');
 
 module.exports = { 
-    ProcessQueue: function (cur_room, room_spawns, room_sources, construction_sites) {
+    ProcessQueue: function (my_creeps, cur_room, room_spawns, room_sources, construction_sites) {
         if (cur_room.energyAvailable < settings.MIN_UNIT_ENERGY)
             return;
             
@@ -31,23 +31,26 @@ module.exports = {
                 creepRole = roles.HARVESTER;
             else if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
                 creepRole = roles.HARVESTER;
-            else if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
-                creepRole = roles.BUILDER;
-            else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
-                creepRole = roles.GUARD;
+
+            if (cur_room.memory.harvesterCount == settings.HARVESTER_ROOM_MAX) {
+                if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
+                    creepRole = roles.BUILDER;
+                if (cur_room.memory.builderCount == settings.BUILDER_ROOM_MAX) {
+                    if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
+                        creepRole = roles.GUARD;
+                }
+            }
             
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 creepRole = roles.GUARD;
-
-            console.log(JSON.stringify(creepRole));
 
             if (creepRole === undefined)
                 return; //dont build anything, no role was a match
 
             creep.bodyParts = GetParts(creepRole, nrg);
             creep.name = GetName(creepRole);
-            creep.memory = GetMemoryObj(room_sources, creepRole);
+            creep.memory = GetMemoryObj(my_creeps, room_sources, creepRole);
             if (spawn.canCreateCreep(creep.bodyParts) == OK) {
                 spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
                 switch(creep.memory.role.value) {
@@ -66,15 +69,37 @@ module.exports = {
     }
 };
 
-function getHarvesterSource (sources) {
-    var i = Math.floor(Math.random() * sources.length);
-    return sources[i].id;
+function getHarvesterSource (creeps, sources) {
+    if (creeps === undefined || creeps.length == 0) {
+        return sources[0].id;
+    } else {
+        var resultCount = creeps.length;
+        var resultSource = '';
+        
+        for(i = 0; i < sources.length; i++) {
+            var sourceId = sources[i].id;
+            var count = 0;
+            for(j = 0; j < creeps.length; j++) {
+                if (sourceId == creeps[j].memory.source)
+                    count++;
+            }
+            if (count < resultCount) {
+                resultCount = count;
+                resultSource = sourceId;
+            } 
+            count = 0;
+        }
+        return resultSource;
+    }
+
+    // var i = Math.floor(Math.random() * sources.length);
+    // return sources[i].id;
 }
 
-function GetMemoryObj(sources, creepRole) {
+function GetMemoryObj(creeps, sources, creepRole) {
     switch(creepRole) {
         case roles.HARVESTER: 
-            return { role: creepRole, source: getHarvesterSource(sources) };
+            return { role: creepRole, source: getHarvesterSource(creeps, sources) };
             break;
         case roles.BUILDER:
             return { role: creepRole };
@@ -113,7 +138,7 @@ function getBuilderParts(nrg) {
     else if (nrg >= 500 && nrg < 650)
         return [WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE];
     else if (nrg >= 650 && nrg < 750)
-        return [WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
+        return [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     else if (nrg >= 750)
         return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
 }
