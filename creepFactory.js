@@ -29,12 +29,15 @@ module.exports = {
             var creepRole;
             if (cur_room.memory.harvesterCount == 0 && nrg <= settings.MIN_UNIT_ENERGY) //this is our baby harvester.
                 creepRole = roles.HARVESTER;
-            if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
+            else if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
                 creepRole = roles.HARVESTER;
-            else if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX)
+            else if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
                 creepRole = roles.BUILDER;
-            else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL)
+            else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
                 creepRole = roles.GUARD;
+
+            if (creepRole === undefined)
+                return; //dont build anything, no role was a match
             
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
