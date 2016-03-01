@@ -27,6 +27,8 @@ module.exports = {
             };
         
             var creepRole;
+            if (cur_room.memory.harvesterCount == 0 && nrg <= settings.MIN_UNIT_ENERGY) //this is our baby harvester.
+                creepRole = roles.HARVESTER;
             if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
                 creepRole = roles.HARVESTER;
             else if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX)

@@ -4,11 +4,11 @@ module.exports = {
     GUARD_ROOM_MAX: 6,
     GUARD_ROOM_PATROL: 2,
     
+    MIN_UNIT_ENERGY: 250, //this is the bare minimum energy we want to use to create a harvester to get things started.
     SPAWN_ENERGY_CAPACITY: 300,
-    MIN_UNIT_ENERGY: 190,
-    MIN_HARVESTER_COST: 250,
-    MIN_BUILDER_COST: 350,
-    MIN_GAURD_COST: 190,
+    MIN_HARVESTER_COST: 650,
+    MIN_BUILDER_COST: 650,
+    MIN_GAURD_COST: 530,
 
     TIER1_RAMPART_HITS: 500,
     TIER2_RAMPART_HITS: 1500,
