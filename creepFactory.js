@@ -35,31 +35,31 @@ module.exports = {
                 creepRole = roles.BUILDER;
             else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
                 creepRole = roles.GUARD;
-
-            if (creepRole === undefined)
-                return; //dont build anything, no role was a match
             
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 creepRole = roles.GUARD;
 
-            if (creepRole) {
-                creep.bodyParts = GetParts(creepRole, nrg);
-                creep.name = GetName(creepRole);
-                creep.memory = GetMemoryObj(room_sources, creepRole);
-                if (spawn.canCreateCreep(creep.bodyParts) == OK) {
-                    spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
-                    switch(creep.memory.role.value) {
-                        case roles.HARVESTER.value:
-                            cur_room.memory.harvesterCount++;
-                            break;
-                        case roles.BUILDER.value:
-                            cur_room.memory.builderCount++;
-                            break;
-                        case roles.GUARD.value:
-                            cur_room.memory.guardCount++;
-                            break;
-                    }
+            console.log(JSON.stringify(creepRole));
+
+            if (creepRole === undefined)
+                return; //dont build anything, no role was a match
+
+            creep.bodyParts = GetParts(creepRole, nrg);
+            creep.name = GetName(creepRole);
+            creep.memory = GetMemoryObj(room_sources, creepRole);
+            if (spawn.canCreateCreep(creep.bodyParts) == OK) {
+                spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
+                switch(creep.memory.role.value) {
+                    case roles.HARVESTER.value:
+                        cur_room.memory.harvesterCount++;
+                        break;
+                    case roles.BUILDER.value:
+                        cur_room.memory.builderCount++;
+                        break;
+                    case roles.GUARD.value:
+                        cur_room.memory.guardCount++;
+                        break;
                 }
             }
         }
