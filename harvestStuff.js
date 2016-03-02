@@ -59,7 +59,12 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
         }
     }
     
-    //creep.task = tasks.DELIVER_RESOURCE;
+    var builders = [];
+    for(i = 0; i < Game.creeps.length; i++) {
+        if (Game.creeps[i].memory.role.value == roles.BUILDER.value)
+            builders.push(Game.creeps[i]);
+    }
+    return creep.pos.findClosestByPath(builders);
 }
 
 function moveOrRestock(creep, target) {
