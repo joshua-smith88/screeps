@@ -7,47 +7,38 @@ module.exports = {
             creep.memory.task = tasks.GATHER_ENERGY;
         
         //this allows units to be created when we need them by not depleting the energy stores for building
-        if (room.memory.harvesterCount == 0 && creep.memory.task == tasks.GATHER_ENERGY ||
-            (room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && room.energyAvailable <= settings.MIN_HARVESTER_COST && creep.memory.task == tasks.GATHER_ENERGY))
-            return;
-        
+        if (room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX)
+            if (creep.carry.energy > 0)
+                creep.task = tasks.BUILD_STRUCTURE; 
+            else 
+                return;
         
         if (creep.memory.task == tasks.GATHER_ENERGY)
         {
-            if (room.energyAvailable <= 1 && creep.carry.energy > 0) {
+            gatherEnergy(creep, storages, extensions, spawns, towers);
+            if (creep.carry.energy == creep.carryCapacity)
                 creep.memory.task = tasks.BUILD_STRUCTURE;
-            } else {
-                gatherEnergy(creep, storages, extensions, spawns, towers);
-                if (creep.carry.energy == creep.carryCapacity)
-                {
-                    creep.memory.task = tasks.BUILD_STRUCTURE;
-                }
-            }
         } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
-            if (creep.carry.energy == 0) {
-               creep.memory.task == tasks.GATHER_ENERGY;
-               gatherEnergy(creep, storages, extensions, spawns, towers);
-            } else {
-                buildOrMove(creep, creep.memory.site);
-            }
+            buildOrMove(creep, creep.memory.site);
         } else if (creep.memory.task == tasks.UPGRADE_CONTROLLER) {
             upgrade_Controller(creep);
         }
+
+        if (creep.carry.energy == 0)
+            creep.memory.task == tasks.GATHER_ENERGY;
+        else if (creep.carry.energy == creep.carryCapacity)
+            creep.memory.task = tasks.BUILD_STRUCTURE;
     },
     GetPreferredTarget: function(creep, sites, controller) {
         if (creep.memory.task == tasks.GATHER_ENERGY)
             return creep.memory.site;
-        //need to rework this logic to prioritize properly
-        //since it isn't working correctly right now, just return first site to reduce CPU
-        if (sites.length > 0 && creep.memory.task != tasks.BUILD_STRUCTURE) {
-            creep.memory.task = tasks.BUILD_STRUCTURE;
+
+        if (sites.length > 0)
             return sites[0];
-        } else if (sites.length > 0) {
-            return sites[0];
-        } else if (sites.length == 0) {
-            creep.memory.task = tasks.UPGRADE_CONTROLLER;
-            return controller;
-        }
+
+        //if we get this far, the only thing left to upgrade is the controller
+        creep.memory.tasks = tasks.UPGRADE_CONTROLLER;
+        return controller;
     }
 }
 function upgrade_Controller(creep) {
