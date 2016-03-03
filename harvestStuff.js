@@ -1,4 +1,5 @@
 var tasks = require('creepTasks');
+var roles = require('creepRoles');
 
 module.exports = {
     Work: function (creep, room, spawns, extensions, towers, storages) {
@@ -59,15 +60,23 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
         }
     }
     
-    var builders = [];
-    for(i = 0; i < Game.creeps.length; i++) {
-        if (Game.creeps[i].memory.role.value == roles.BUILDER.value)
-            builders.push(Game.creeps[i]);
+    var buildersNeedEnergy = [];
+    var builders = room.find(FIND_MY_CREEPS, {
+       filter: function(obj) {
+           return obj.memory.role.value == roles.BUILDER.value;
+       } 
+    });
+    for(i = 0; i < builders.length; i++) {
+        if (builders[i].carry.energy < builders[i].carryCapacity)
+            buildersNeedEnergy.push(builders[i]);
     }
-    return creep.pos.findClosestByPath(builders);
+    var closestBuilder = creep.pos.findClosestByPath(buildersNeedEnergy);
+    if (closestBuilder != null)
+        moveOrRestock(creep, closestBuilder);
 }
 
 function moveOrRestock(creep, target) {
-    if (creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE)
+    var result = creep.transfer(target, RESOURCE_ENERGY)
+    if (result == ERR_NOT_IN_RANGE)
         creep.moveTo(target);
 }
