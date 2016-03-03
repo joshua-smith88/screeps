@@ -18,16 +18,14 @@ module.exports = {
             gatherEnergy(creep, storages, extensions, spawns, towers);
             if (creep.carry.energy == creep.carryCapacity)
                 creep.memory.task = tasks.BUILD_STRUCTURE;
-        } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
-            buildOrMove(creep, creep.memory.site);
         } else if (creep.memory.task == tasks.UPGRADE_CONTROLLER) {
             upgrade_Controller(creep);
-        }
+        } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
+            buildOrMove(creep, creep.memory.site);
+        } 
 
         if (creep.carry.energy == 0)
             creep.memory.task == tasks.GATHER_ENERGY;
-        else if (creep.carry.energy == creep.carryCapacity)
-            creep.memory.task = tasks.BUILD_STRUCTURE;
     },
     GetPreferredTarget: function(creep, sites, controller) {
         if (creep.memory.task == tasks.GATHER_ENERGY)
@@ -35,9 +33,9 @@ module.exports = {
 
         if (sites.length > 0)
             return sites[0];
-
+        
         //if we get this far, the only thing left to upgrade is the controller
-        creep.memory.tasks = tasks.UPGRADE_CONTROLLER;
+        creep.memory.task = tasks.UPGRADE_CONTROLLER;
         return controller;
     }
 }
@@ -46,7 +44,6 @@ function upgrade_Controller(creep) {
         creep.moveTo(creep.memory.site);
 }
 function gatherEnergy(creep, storages, extensions, spawns, towers) {
-    
     var allSources = storages.concat(extensions.concat(spawns.concat(towers)));
     var energySources = creep.pos.findInRange(allSources, 1);
     if (energySources.length > 0) {
