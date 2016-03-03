@@ -1,5 +1,5 @@
 module.exports = {
-    HARVESTER_ROOM_MAX: 4,
+    HARVESTER_ROOM_MAX: 6,
     BUILDER_ROOM_MAX: 3,
     GUARD_ROOM_MAX: 6,
     GUARD_ROOM_PATROL: 2,
