@@ -71,12 +71,23 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
             buildersNeedEnergy.push(builders[i]);
     }
     var closestBuilder = creep.pos.findClosestByPath(buildersNeedEnergy);
-    if (closestBuilder != null)
+    if (closestBuilder != null) {
         moveOrRestock(creep, closestBuilder);
+    }
+    else {
+        moveOrRestock(creep, creep.pos.findClosestByPath(builders));        
+    }
 }
 
 function moveOrRestock(creep, target) {
     var result = creep.transfer(target, RESOURCE_ENERGY)
-    if (result == ERR_NOT_IN_RANGE)
+    if (result == ERR_NOT_IN_RANGE) {
         creep.moveTo(target);
+    } else {
+        try {
+            target.memory.task == tasks.BUILD_STRUCTURE; //if we added energy, make them go back to continue building -- more efficient
+            target.cancelOrder('refillEnergyOrMove');
+        } catch(err) { }
+    } 
+        
 }

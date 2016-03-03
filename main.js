@@ -7,7 +7,21 @@ var harvester = require('harvestStuff');
 var builder = require('buildStuff');
 var guard = require('guardStuff');
 
+var directions = [
+        TOP,
+        TOP_RIGHT,
+        RIGHT,
+        BOTTOM_RIGHT,
+        BOTTOM,
+        BOTTOM_LEFT,
+        LEFT,
+        TOP_LEFT
+    ];
+var center = { x: 26, y: 26 }
 
+var pickRandomMove = function () {
+    return directions[Math.floor(Math.random() * directions.length)];
+}
 module.exports.loop = function () {
     for(var r in Game.rooms) {
         var _room = Game.rooms[r];
@@ -33,15 +47,18 @@ module.exports.loop = function () {
                 _walls.push(structs[i]);
         }
 
-        if (_room.memory.harvesterCount === undefined)
-            _room.memory.harvesterCount = -1;
-        if (_room.memory.builderCount === undefined)
-            _room.memory.builderCount = -1;
-        if (_room.memory.guardCount === undefined)
-            _room.memory.guardCount = -1;
+        //this little snippet will help creeps from binding up on each other while trying to go to the same location
+        if (Game.time % 50 == 0) {
+            for(i = 0; i < _creeps.length; i++) {
+                var creep = _creeps[i];
+                if (creep.memory.role.value == roles.HARVESTER.value)
+                    creep.move(pickRandomMove());
+            }
+        }
         
         var updateCounts = false;
-        if (_room.memory.harvesterCount < 0 || _room.memory.builderCount < 0 || _room.memory.guardCount < 0) {
+        
+        if (_creeps.length != _room.memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount) {
             _room.memory.harvesterCount = 0;
             _room.memory.builderCount = 0;
             _room.memory.guardCount = 0;
@@ -52,12 +69,12 @@ module.exports.loop = function () {
             if(_creeps[i].memory.role) {
                 switch(_creeps[i].memory.role.value) {
                     case roles.HARVESTER.value:
-                        if (updateCounts === true)
+                        if (updateCounts == true)
                             _room.memory.harvesterCount++;
                         harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                         break;
                     case roles.BUILDER.value:
-                        if (updateCounts === true)
+                        if (updateCounts == true)
                             _room.memory.builderCount++;
                         if (_hostiles.length <= 0) {
                             _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
@@ -65,7 +82,7 @@ module.exports.loop = function () {
                         }
                         break;
                     case roles.GUARD.value:
-                        if (updateCounts === true)
+                        if (updateCounts == true)
                             _room.memory.guardCount++;
                         guard.Work(_creeps[i]);
                         break;
@@ -74,22 +91,13 @@ module.exports.loop = function () {
         }
         
         //remove old resources
-        for(var i in Memory.creeps) {
-            var creep = Memory.creeps[i];
-            if(!Game.creeps[i]) {
-                var role = creep.role.value;
-                switch(role) {
-                    case roles.HARVESTER.value:
-                        _room.memory.harvesterCount--;
-                        break;
-                    case roles.BUILDER.value:
-                        _room.memory.builderCount--;
-                        break;
-                    case roles.GUARD.value:
-                        _room.memory.guardCount--;
-                        break;
+        var removedCount = 0;
+        if (updateCounts) {
+            for(var i in Memory.creeps) {
+                if(!Game.creeps[i]) {
+                    removedCount++;
+                    delete Memory.creeps[i];
                 }
-                delete Memory.creeps[i];
             }
         }
         

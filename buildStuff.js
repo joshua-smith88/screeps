@@ -17,7 +17,7 @@ module.exports = {
             if (room.energyAvailable <= 1 && creep.carry.energy > 0) {
                 creep.memory.task = tasks.BUILD_STRUCTURE;
             } else {
-                gatherEnergy(creep, storages, extensions, spawns);
+                gatherEnergy(creep, storages, extensions, spawns, towers);
                 if (creep.carry.energy == creep.carryCapacity)
                 {
                     creep.memory.task = tasks.BUILD_STRUCTURE;
@@ -26,7 +26,7 @@ module.exports = {
         } else if (creep.memory.task == tasks.BUILD_STRUCTURE) {
             if (creep.carry.energy == 0) {
                creep.memory.task == tasks.GATHER_ENERGY;
-               gatherEnergy(creep, storages, extensions, spawns);
+               gatherEnergy(creep, storages, extensions, spawns, towers);
             } else {
                 buildOrMove(creep, creep.memory.site);
             }
@@ -48,24 +48,6 @@ module.exports = {
             creep.memory.task = tasks.UPGRADE_CONTROLLER;
             return controller;
         }
-            
-        // for(i = 0; i < sites.length; i++) {
-        //     if (sites[i].structureType == STRUCTURE_SPAWN)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_STORAGE)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_TOWER)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_EXTENSION) 
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_RAMPART)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_WALL)
-        //         return sites[i];
-        //     if (sites[i].structureType == STRUCTURE_ROAD)
-        //         return sites[i];
-        // }
-
     }
 }
 function upgrade_Controller(creep) {
@@ -73,6 +55,14 @@ function upgrade_Controller(creep) {
         creep.moveTo(creep.memory.site);
 }
 function gatherEnergy(creep, storages, extensions, spawns, towers) {
+    
+    var allSources = storages.concat(extensions.concat(spawns.concat(towers)));
+    var energySources = creep.pos.findInRange(allSources, 1);
+    if (energySources.length > 0) {
+        if (energySources[0].transferEnergy(creep) == OK)
+            return;
+    }
+    
     for(i = 0; i < storages.length; i++) {
         if (storages[i].energy > 0) {
             refillEnergyOrMove(creep, storages[i]);
