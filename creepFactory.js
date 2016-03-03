@@ -3,57 +3,61 @@ var roles = require('creepRoles');
 
 module.exports = { 
     ProcessQueue: function (my_creeps, cur_room, room_spawns, room_sources, construction_sites) {
+
+        //if there's not enough energy, do nothing. Save some CPU
         if (cur_room.energyAvailable < settings.MIN_UNIT_ENERGY)
             return;
             
-        if (cur_room.memory.harvesterCount == settings.HARVESTER_ROOM_MAX &&
-            cur_room.memory.builderCount == settings.BUILDER_ROOM_MAX &&
-            cur_room.memory.guardCount == settings.GUARD_ROOM_MAX)
+        //if we have enough units in the room, do nothing and save some CPU
+        if (cur_room.memory.harvesterCount >= settings.HARVESTER_ROOM_MAX &&
+            cur_room.memory.builderCount >= settings.BUILDER_ROOM_MAX &&
+            cur_room.memory.guardCount >= settings.GUARD_ROOM_MAX)
             return;
             
-        
+        //figure out how much cumulative energy is held in the spawns
         var spawn_energy = 0;
         for(var s in room_spawns) {
             var spawn = room_spawns[s];
             spawn_energy += spawn.energy;
         }
+
+        //lets determine which creep to build now
         for(var s in room_spawns) {
+
+            //first, lets get the energy available to this spawn, specifically.
             var spawn = room_spawns[s];
             var nrg = (cur_room.energyAvailable - spawn_energy) + spawn.energy;
-            var creep = {
-                bodyParts: [],
-                name: '',
-                memory: {}
-            };
+
+            var role;
         
-            var creepRole;
             if (cur_room.memory.harvesterCount == 0 && nrg <= settings.MIN_UNIT_ENERGY) //this is our baby harvester.
-                creepRole = roles.HARVESTER;
+                role = roles.HARVESTER;
             else if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
-                creepRole = roles.HARVESTER;
+                role = roles.HARVESTER;
 
             if (cur_room.memory.harvesterCount >= settings.HARVESTER_ROOM_MAX) {
                 if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
-                    creepRole = roles.BUILDER;
+                    role = roles.BUILDER;
                 if (cur_room.memory.builderCount == settings.BUILDER_ROOM_MAX) {
                     if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
-                        creepRole = roles.GUARD;
+                        role = roles.GUARD;
                 }
             }
             
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
-                creepRole = roles.GUARD;
+                role = roles.GUARD;
 
-            if (creepRole === undefined)
+            if (role === undefined)
                 return; //dont build anything, no role was a match
 
-            creep.bodyParts = GetParts(creepRole, nrg);
-            creep.name = GetName(creepRole);
-            creep.memory = GetMemoryObj(my_creeps, room_sources, creepRole);
-            if (spawn.canCreateCreep(creep.bodyParts) == OK) {
-                spawn.createCreep(creep.bodyParts, creep.name, creep.memory);
-                switch(creep.memory.role.value) {
+            //create the creep!
+            var bodyParts = GetParts(role, nrg);
+            var name = GetName(role);
+            var mem = GetMemoryObj(my_creeps, room_sources, role);
+            if (spawn.canCreateCreep(bodyParts) == OK) {
+                spawn.createCreep(bodyParts, name, mem);
+                switch(mem.role.value) {
                     case roles.HARVESTER.value:
                         cur_room.memory.harvesterCount++;
                         break;
@@ -68,7 +72,7 @@ module.exports = {
         }
     }
 };
-
+//determine which source to harvest from -- for harvester creeps
 function getHarvesterSource (creeps, sources) {
     if (creeps === undefined || creeps.length == 0) {
         return sources[0].id;
@@ -91,11 +95,8 @@ function getHarvesterSource (creeps, sources) {
         }
         return resultSource;
     }
-
-    // var i = Math.floor(Math.random() * sources.length);
-    // return sources[i].id;
 }
-
+//lets get the memory object for the creep
 function GetMemoryObj(creeps, sources, creepRole) {
     switch(creepRole) {
         case roles.HARVESTER: 
@@ -109,6 +110,7 @@ function GetMemoryObj(creeps, sources, creepRole) {
             break;
     }
 }
+//get body parts, depending on role
 function GetParts(role, nrg) {
     switch(role) {
         case roles.HARVESTER:
@@ -119,6 +121,7 @@ function GetParts(role, nrg) {
             return getGuardParts(nrg);
     }
 }
+//generate a name for the creep
 function GetName(role) {
     var result = '';
     var s = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -127,6 +130,14 @@ function GetName(role) {
     
     return role.name + "_" + result;
 }
+
+
+//
+//
+// The following section is the mapping for body parts for the creeps.
+// by mapping like this, i can support all stages of progress in the game from the very beginning, all the way to multi-room empires.
+//
+//
 
 function getBuilderParts(nrg) {
     if (nrg >= 250 && nrg < 300) 
