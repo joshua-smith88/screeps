@@ -32,7 +32,7 @@ module.exports = {
             else if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
                 creepRole = roles.HARVESTER;
 
-            if (cur_room.memory.harvesterCount == settings.HARVESTER_ROOM_MAX) {
+            if (cur_room.memory.harvesterCount >= settings.HARVESTER_ROOM_MAX) {
                 if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
                     creepRole = roles.BUILDER;
                 if (cur_room.memory.builderCount == settings.BUILDER_ROOM_MAX) {
