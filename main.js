@@ -42,9 +42,6 @@ module.exports.loop = function () {
         var structs = _room.find(FIND_MY_STRUCTURES);
         
         
-        
-        
-
         //some of the structures don't work with the find
         for(var i in structs) {
             if (structs[i].structureType == STRUCTURE_EXTENSION)
@@ -61,7 +58,7 @@ module.exports.loop = function () {
                 _roads.add(structs[i]);
         }
         
-        if (Game.time % 5000 == 0)
+        if (Game.time % 1000 == 0)
             buildRoads(_room, _spawns, _sources, _extensions, _storages);
         //clearSites(_constSites);
         
@@ -181,6 +178,26 @@ function buildRoads(room, spawns, sources, extensions, storages) {
             var result = pos.createConstructionSite(STRUCTURE_ROAD);
             if (result == ERR_FULL)
                 return; //too many construction sites. exit.
+        }
+    }
+    
+    for(i = 0; i < extensions.length; i++)
+    {
+        var x = extensions[i].pos.x -1;
+        var y = extensions[i].pos.y -1;
+        var a = x + 2;
+        var b = y + 2;
+        while(x <= a)
+        {
+            y = extensions[i].pos.y -1;
+            while(y <= b) {
+                var pos = new RoomPosition(x, y, room.name);
+                var result = pos.createConstructionSite(STRUCTURE_ROAD);
+                if (result == ERR_FULL)
+                    return;
+                y++
+            }
+            x++;
         }
     }
 }
