@@ -150,10 +150,27 @@ function getBuilderParts(nrg) {
         return  [WORK, WORK, WORK, CARRY, CARRY, MOVE];
     else if (nrg >= 550 && nrg < 650)
         return [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
-    else if (nrg >= 650 && nrg < 750)
+    else if (nrg >= 650 && nrg < 700)
         return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    else if (nrg >= 700 && nrg < 750)
+        return [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE];
     else if (nrg >= 750)
-        return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE];
+    {
+        var parts = [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE];
+        nrg = nrg - 750;
+        var part = CARRY;
+        
+        while (nrg > 0) {
+            parts.push(part);
+            if (part == CARRY)
+                part = MOVE;
+            else if (part == MOVE)
+                part = CARRY;
+            nrg -= 50
+        }
+        return parts;
+    }
+        
 }
 
 function getHarvesterParts(nrg) {
@@ -168,7 +185,21 @@ function getHarvesterParts(nrg) {
     else if (nrg >= 650 && nrg < 750)
         return [WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE];
     else if (nrg >= 750)
-        return [WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+    {
+        var parts = [WORK, WORK, WORK, WORK, WORK, MOVE, MOVE, MOVE, MOVE, MOVE];
+        nrg = nrg - 750;
+        var part = CARRY;
+        
+        while (nrg > 0) {
+            parts.push(part);
+            if (part == CARRY)
+                part = MOVE;
+            else if (part == MOVE)
+                part = CARRY;
+            nrg -= 50
+        }
+        return parts;
+    }
 }
 
 function getGuardParts(nrg) {
@@ -182,6 +213,8 @@ function getGuardParts(nrg) {
         return [ATTACK, RANGED_ATTACK, TOUGH, MOVE, MOVE, MOVE];
     else if (nrg >= 530 && nrg < 650)
         return [ATTACK, RANGED_ATTACK, RANGED_ATTACK, MOVE, MOVE, MOVE];
-    else if (nrg >= 650)
-        return [ATTACK, RANGED_ATTACK, RANGED_ATTACK, TOUGH, TOUGH, MOVE, MOVE, MOVE, MOVE, MOVE];
+    else if (nrg >= 990) {
+        var parts = [RANGED_ATTACK, RANGED_ATTACK, RANGED_ATTACK, ATTACK, ATTACK, ATTACK, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE];
+        return parts;
+    }
 }

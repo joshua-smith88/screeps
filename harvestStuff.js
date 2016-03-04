@@ -41,23 +41,38 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
             return;
         }
     }
-    for(var i = 0; i < extensions.length; i++) {
-        if (extensions[i].energy < extensions[i].energyCapacity) {
-            moveOrRestock(creep, extensions[i]);
-            return;
-        }
+    var extsNeedEnergy = [];
+    for(i = 0; i < extensions.length; i++)
+        if (extensions[i].energy < extensions[i].energyCapacity)
+            extsNeedEnergy.push(extensions[i]);
+            
+    if (extsNeedEnergy.length > 0) {
+        var ext = creep.pos.findClosestByPath(extsNeedEnergy);
+        moveOrRestock(creep, ext);
+        return;
     }
-    for (i = 0; i < towers.length; i++) {
-        if (towers[i].energy < towers[i].energyCapacity) {
-            moveOrRestock(creep, towers[i]);
-            return;
-        }
+    
+    var towersNeedEnergy = [];
+    for(i = 0; i < towers.length; i++)
+        if (towers[i].energy < towers[i].energyCapacity / 2)
+            towersNeedEnergy.push(towers[i]);
+    if (towersNeedEnergy.length > 0) {
+        var tower = creep.pos.findClosestByPath(towersNeedEnergy);
+        moveOrRestock(creep, tower);
+        return;
     }
-    for(i = 0; i < storages.length; i++) {
-        if (storages[i].energy < storages[i].energyCapacity) {
-            moveOrRestock(creep, storages[i]);
-            return;
-        }
+        
+    
+    var storagesNeedEnergy = [];
+    for(i = 0; i < storages.length; i++)
+        if (storages[i].store.energy < storages[i].storeCapacity)
+            storagesNeedEnergy.push(storages[i]);
+    
+    //console.log(storagesNeedEnergy.length);
+    if (storagesNeedEnergy.length > 0) {
+        var store = creep.pos.findClosestByPath(storagesNeedEnergy);
+        moveOrRestock(creep, store);
+        return;
     }
     
     var buildersNeedEnergy = [];
@@ -76,6 +91,12 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
     }
     else {
         moveOrRestock(creep, creep.pos.findClosestByPath(builders));        
+    }
+    for (i = 0; i < towers.length; i++) {
+        if (towers[i].energy < towers[i].energyCapacity) {
+            moveOrRestock(creep, towers[i]);
+            return;
+        }
     }
 }
 

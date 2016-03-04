@@ -2,6 +2,7 @@ var settings = require('_Settings');
 
 var factory = require('creepFactory');
 var roles = require('creepRoles');
+var tasks = require('creepTasks');
 
 var harvester = require('harvestStuff');
 var builder = require('buildStuff');
@@ -39,9 +40,10 @@ module.exports.loop = function () {
         var _walls = [];
         var _ramparts = [];
         var structs = _room.find(FIND_MY_STRUCTURES);
-
-
-        //buildRoads(_room, _spawns, _sources);
+        
+        
+        if (Game.time % 10000)
+            buildRoads(_room, _spawns, _sources);
         //clearSites(_constSites);
 
         //some of the structures don't work with the find
@@ -56,16 +58,9 @@ module.exports.loop = function () {
                 _walls.push(structs[i]);
             if (structs[i].structureType == STRUCTURE_RAMPART)
                 _ramparts.push(structs[i]);
+            if (structs[i].structureType == STRUCTURE_ROAD)
+                _roads.add(structs[i]);
         }
-
-        //this little snippet will help creeps from binding up on each other while trying to go to the same location
-        // if (Game.time % 50 == 0) {
-        //     for(i = 0; i < _creeps.length; i++) {
-        //         var creep = _creeps[i];
-        //         if (creep.memory.role.value == roles.HARVESTER.value)
-        //             creep.move(pickRandomMove());
-        //     }
-        // }
         
         //do we need to update the count for everything? (creep died, suicide, etc)
         var updateCounts = false;
@@ -121,15 +116,14 @@ module.exports.loop = function () {
                 _towers[i].attack(_hostiles[0]);
             }
         } else {
-            
             var rampart = _ramparts[0];
             for (i = 1; i < _ramparts.length; i++) {
                 if (_ramparts[i].hits < rampart.hits)
                     rampart = _ramparts[i];
             }
-            if (rampart !== undefined) {
+            if (rampart !== undefined && (rampart.ticksToDecay < 10 || rampart.hits < 25000)) {
                 for(i = 0; i < _towers.length; i++) {
-                    if (_towers[i].energy > _towers[i].energyCapacity / 2)
+                    if (_towers[i].energy > _towers[i].energyCapacity / 10)
                         _towers[i].repair(rampart);
                 }
             }
