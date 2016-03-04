@@ -37,6 +37,7 @@ module.exports.loop = function () {
         var _storages = [];
         var _hostiles = _room.find(FIND_HOSTILE_CREEPS);
         var _walls = [];
+        var _ramparts = [];
         var structs = _room.find(FIND_MY_STRUCTURES);
 
         //some of the structures don't work with the find
@@ -49,6 +50,8 @@ module.exports.loop = function () {
                 _storages.push(structs[i]);
             if (structs[i].structureType == "constructedWall")
                 _walls.push(structs[i]);
+            if (structs[i].structureType == STRUCTURE_RAMPART)
+                _ramparts.push(structs[i]);
         }
 
         //this little snippet will help creeps from binding up on each other while trying to go to the same location
@@ -112,6 +115,19 @@ module.exports.loop = function () {
         {
             for(i = 0; i < _towers.length; i++) {
                 _towers[i].attack(_hostiles[0]);
+            }
+        } else {
+            
+            var rampart = _ramparts[0];
+            for (i = 1; i < _ramparts.length; i++) {
+                if (_ramparts[i].hits < rampart.hits)
+                    rampart = _ramparts[i];
+            }
+            if (rampart !== undefined) {
+                for(i = 0; i < _towers.length; i++) {
+                    if (_towers[i].energy > _towers[i].energyCapacity / 2)
+                        _towers[i].repair(rampart);
+                }
             }
         }
     }

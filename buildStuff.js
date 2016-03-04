@@ -34,7 +34,7 @@ function upgrade_Controller(creep) {
         creep.moveTo(creep.memory.site);
 }
 function buildOrMove(creep, targetSite) {
-    if (creep.findPathTo(targetSite).length > 1)
+    if (creep.pos.findPathTo(targetSite).length > 1)
         creep.moveTo(targetSite);
 
     if (creep.build(targetSite) == ERR_NOT_IN_RANGE)
