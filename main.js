@@ -40,6 +40,10 @@ module.exports.loop = function () {
         var _ramparts = [];
         var structs = _room.find(FIND_MY_STRUCTURES);
 
+
+        //buildRoads(_room, _spawns, _sources);
+        //clearSites(_constSites);
+
         //some of the structures don't work with the find
         for(var i in structs) {
             if (structs[i].structureType == STRUCTURE_EXTENSION)
@@ -55,13 +59,13 @@ module.exports.loop = function () {
         }
 
         //this little snippet will help creeps from binding up on each other while trying to go to the same location
-        if (Game.time % 50 == 0) {
-            for(i = 0; i < _creeps.length; i++) {
-                var creep = _creeps[i];
-                if (creep.memory.role.value == roles.HARVESTER.value)
-                    creep.move(pickRandomMove());
-            }
-        }
+        // if (Game.time % 50 == 0) {
+        //     for(i = 0; i < _creeps.length; i++) {
+        //         var creep = _creeps[i];
+        //         if (creep.memory.role.value == roles.HARVESTER.value)
+        //             creep.move(pickRandomMove());
+        //     }
+        // }
         
         //do we need to update the count for everything? (creep died, suicide, etc)
         var updateCounts = false;
@@ -132,3 +136,55 @@ module.exports.loop = function () {
         }
     }
 }
+
+function clearSites(sites) {
+    for(i = 0; i < sites.length; i++) {
+        if (sites[i].structureType == STRUCTURE_ROAD)
+            sites[i].remove();
+    }
+}
+
+function buildRoads(room, spawns, sources) {
+    
+    for(i = 0; i < spawns.length; i++) {
+        var tooManySites = false;
+        //spawn to controller
+        var controllerPath = spawns[i].pos.findPathTo(room.controller, { ignoreCreeps: true, heuristicWeight: 2500 });
+        for(j = 0; j < controllerPath.length; j++) {
+            var pos = new RoomPosition(controllerPath[j].x, controllerPath[j].y, room.name);
+            var result = pos.createConstructionSite(STRUCTURE_ROAD);
+            if (result == ERR_FULL) {
+                tooManySites = true;
+                break;
+            }
+        }
+        if (tooManySites === true)
+            break;
+        
+        //spawn to resources
+        for(j = 0; j < sources.length; j++) {
+            var resourcePath = spawns[i].pos.findPathTo(sources[j], { ignoreCreeps: true, heuristicWeight: 2500 });
+            for(k = 0; k < resourcePath.length; k++) {
+                var pos = new RoomPosition(resourcePath[k].x, resourcePath[k].y, room.name);
+                var result = pos.createConstructionSite(STRUCTURE_ROAD);
+                if (result == ERR_FULL) {
+                    tooManySites = true;
+                    break;
+                }
+                
+            }
+            if (tooManySites === true)
+                    break;
+        }
+        if (tooManySites === true)
+                    break;
+        
+        //wrap extensions
+        
+        //controller to nearest extension
+        //sources to nearest extension
+        
+    }
+}
+
+
