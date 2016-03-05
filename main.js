@@ -79,8 +79,8 @@ module.exports.loop = function () {
         
         //do we need to update the count for everything? (creep died, suicide, etc)
         var updateCounts = false;
-        if (_creeps.length != _room.memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount + Memory.scoutCount) {
-            _room.memory.harvesterCount = 0;
+        if (_creeps.length != Memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount + Memory.scoutCount) {
+            Memory.harvesterCount = 0;
             _room.memory.builderCount = 0;
             _room.memory.guardCount = 0;
             Memory.scoutCount = 0;

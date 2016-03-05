@@ -12,7 +12,7 @@ module.exports = {
             creep.memory.task = tasks.GATHER_ENERGY;
         
         //this allows units to be created when we need them by not depleting the energy stores for building
-        if (room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && storageEnergy == 0 && spawns.length > 0)
+        if (Memory.harvesterCount < sources.length * settings.HARVESTERS_PER_SOURCE && storageEnergy == 0 && spawns.length > 0)
             if (creep.carry.energy > 0)
                 creep.task = tasks.BUILD_STRUCTURE; 
             else 
