@@ -37,6 +37,8 @@ module.exports.loop = function () {
     
     var _scoutCount = 0;
     var _harvesterCount = 0;
+    var _builderCount = 0;
+    var _guardCount = 0;
     
     for(var r in Game.rooms) {
         var room = Game.rooms[r];
@@ -46,15 +48,37 @@ module.exports.loop = function () {
         _structs = _structs.concat(room.find(FIND_MY_STRUCTURES));
         _hostiles = _hostiles.concat(room.find(FIND_HOSTILE_CREEPS));
     }
-    var creeps = room.find(FIND_MY_CREEPS);
-    for(i = 0; i < creeps.length; i++)
-    {
-        if (creeps[i].memory.role.value == roles.SCOUT.value)
-            _scoutCount++;
-        if (creeps[i].memory.role.value == roles.HARVESTER.value)
-            _harvesterCount++;
+
+
+    var updateCounts = false;
+    if (_creeps.length != Memory.harvesterCount + Memory.builderCount + Memory.guardCount + Memory.scoutCount) {
+        Memory.harvesterCount = 0;
+        Memory.builderCount = 0;
+        Memory.guardCount = 0;
+        Memory.scoutCount = 0;
+        updateCounts = true;
     }
-    
+    if (updateCounts) {
+        for(var i in Memory.creeps) {
+            if(!Game.creeps[i]) {
+                delete Memory.creeps[i];
+            }
+        }
+    }
+    if (updateCounts);
+    {
+        for(i = 0; i < _creeps.length; i++)
+        {
+            if (_creeps[i].memory.role.value == roles.SCOUT.value)
+                _scoutCount++;
+            if (_creeps[i].memory.role.value == roles.HARVESTER.value)
+                _harvesterCount++;
+            if (_creeps[i].memory.role.value == roles.BUILDER.value)
+                _builderCount++;
+            if (_creeps[i].memory.role.value == roles.GUARD.value)
+                _guardCount++;
+        }
+    }
     for(var i in _structs) {
         if (_structs[i].structureType == STRUCTURE_EXTENSION)
             _extensions.push(_structs[i]);
@@ -66,6 +90,8 @@ module.exports.loop = function () {
     
     Memory.scoutCount = _scoutCount;
     Memory.harvesterCount = _harvesterCount;
+    Memory.builderCount = _builderCount;
+    Memory.guardCount = _guardCount;
     
     
     for(var r in Game.rooms) {
@@ -77,56 +103,27 @@ module.exports.loop = function () {
         //     buildRoads(_room, _spawns, _sources, _extensions, _storages);
         //clearSites(_constSites);
         
-        //do we need to update the count for everything? (creep died, suicide, etc)
-        var updateCounts = false;
-        if (_creeps.length != Memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount + Memory.scoutCount) {
-            Memory.harvesterCount = 0;
-            _room.memory.builderCount = 0;
-            _room.memory.guardCount = 0;
-            Memory.scoutCount = 0;
-            updateCounts = true;
-        }
         
         //loop through the creeps and set them to work.
         for(var i in _creeps) {
             switch(_creeps[i].memory.role.value) {
                 case roles.HARVESTER.value:
-                    if (updateCounts == true)
-                        _room.memory.harvesterCount++;
                     harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
                     break;
                 case roles.BUILDER.value:
-                    if (updateCounts == true)
-                        _room.memory.builderCount++;
                     if (_hostiles.length <= 0) { //freeze the builders if under attack - we need energy to build guards
                         _creeps[i].memory.site = builder.GetPreferredTarget(_creeps[i], _constSites, _room.controller);
                         builder.Work(_creeps[i], _room, _spawns, _constSites, _storages, _extensions, _towers);
                     }
                     break;
                 case roles.GUARD.value:
-                    if (updateCounts == true)
-                        _room.memory.guardCount++;
                     guard.Work(_creeps[i]);
                     break;
                 case roles.SCOUT.value:
-                    if (updateCounts == true)
-                        _room.memory.scoutCount++;
                     scout.Work(_creeps[i]);
                     break;
             }
-        }
-        
-        //remove old resources
-        var removedCount = 0;
-        if (updateCounts) {
-            for(var i in Memory.creeps) {
-                if(!Game.creeps[i]) {
-                    removedCount++;
-                    delete Memory.creeps[i];
-                }
-            }
-        }
-        
+        }        
         //run the creep factory
         factory.ProcessQueue(_creeps, _room, _spawns, _sources, _constSites);
 

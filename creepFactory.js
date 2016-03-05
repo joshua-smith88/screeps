@@ -10,8 +10,8 @@ module.exports = {
             
         //if we have enough units in the room, do nothing and save some CPU
         if (Memory.harvesterCount >= minHarvesters &&
-            cur_room.memory.builderCount >= settings.BUILDER_ROOM_MAX &&
-            cur_room.memory.guardCount >= settings.GUARD_ROOM_MAX &&
+            Memory.builderCount >= settings.BUILDER_ROOM_MAX &&
+            Memory.guardCount >= settings.GUARD_ROOM_MAX &&
             Memory.scoutCount >= settings.SCOUT_MAX)
             return;
         
@@ -37,16 +37,16 @@ module.exports = {
                 role = roles.HARVESTER;
 
             if (Memory.harvesterCount >= minHarvesters) {
-                if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
+                if (Memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
                     role = roles.BUILDER; 
-                else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
+                else if (Memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
                     role = roles.GUARD;
                 else if (Memory.scoutCount < settings.SCOUT_MAX && nrg >= settings.MIN_SCOUT_COST)
                     role = roles.SCOUT;
             }
             
             //if we are under attack, prioritize building more guards, and build up to the room max
-            if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
+            if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && Memory.guardCount < settings.GUARD_ROOM_MAX)
                 role = roles.GUARD;
 
             if (role === undefined)
@@ -63,10 +63,10 @@ module.exports = {
                         Memory.harvesterCount++;
                         break;
                     case roles.BUILDER.value:
-                        cur_room.memory.builderCount++;
+                        Memory.builderCount++;
                         break;
                     case roles.GUARD.value:
-                        cur_room.memory.guardCount++;
+                        Memory.guardCount++;
                         break;
                     case roles.SCOUT.value:
                         Memory.scoutCount++;
