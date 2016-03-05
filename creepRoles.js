@@ -3,5 +3,6 @@ module.exports = {
     BUILDER: { value: 1, name: "Builder" },
     GUARD: { value: 2, name: "Guard" },
     MAINTENANCE: { value: 3, name: "Maintenance" },
-    HEALER: { value: 4, name: "Healer" }
+    HEALER: { value: 4, name: "Healer" },
+    SCOUT: { value: 5, name: "Scout" }
 };

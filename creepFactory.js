@@ -3,17 +3,19 @@ var roles = require('creepRoles');
 
 module.exports = { 
     ProcessQueue: function (my_creeps, cur_room, room_spawns, room_sources, construction_sites) {
+        var minHarvesters = room_sources.length * settings.HARVESTERS_PER_SOURCE;
 
         //if there's not enough energy, do nothing. Save some CPU
         if (cur_room.energyAvailable < settings.MIN_UNIT_ENERGY)
             return;
             
         //if we have enough units in the room, do nothing and save some CPU
-        if (cur_room.memory.harvesterCount >= settings.HARVESTER_ROOM_MAX &&
+        if (Memory.harvesterCount >= room_sources * minHarvesters &&
             cur_room.memory.builderCount >= settings.BUILDER_ROOM_MAX &&
-            cur_room.memory.guardCount >= settings.GUARD_ROOM_MAX)
+            cur_room.memory.guardCount >= settings.GUARD_ROOM_MAX &&
+            Memory.scoutCount >= settings.SCOUT_MAX)
             return;
-            
+        
         //figure out how much cumulative energy is held in the spawns
         var spawn_energy = 0;
         for(var s in room_spawns) {
@@ -30,20 +32,20 @@ module.exports = {
 
             var role;
         
-            if (cur_room.memory.harvesterCount == 0 && nrg <= settings.MIN_UNIT_ENERGY) //this is our baby harvester.
+            if (Memory.harvesterCount == 0 && nrg <= settings.MIN_UNIT_ENERGY) //this is our baby harvester.
                 role = roles.HARVESTER;
-            else if (cur_room.memory.harvesterCount < settings.HARVESTER_ROOM_MAX && nrg >= settings.MIN_HARVESTER_COST)
+            else if (Memory.harvesterCount < minHarvesters && nrg >= settings.MIN_HARVESTER_COST)
                 role = roles.HARVESTER;
 
-            if (cur_room.memory.harvesterCount >= settings.HARVESTER_ROOM_MAX) {
+            if (Memory.harvesterCount >= minHarvesters) {
                 if (cur_room.memory.builderCount < settings.BUILDER_ROOM_MAX && nrg >= settings.MIN_BUILDER_COST)
-                    role = roles.BUILDER;
-                if (cur_room.memory.builderCount == settings.BUILDER_ROOM_MAX) {
-                    if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
-                        role = roles.GUARD;
-                }
+                    role = roles.BUILDER; 
+                else if (cur_room.memory.guardCount < settings.GUARD_ROOM_PATROL && nrg >= settings.MIN_GUARD_COST)
+                    role = roles.GUARD;
+                else if (Memory.scoutCount < settings.SCOUT_MAX && nrg >= settings.MIN_SCOUT_COST)
+                    role = roles.SCOUT;
             }
-            
+            console.log(JSON.stringify(role));
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 role = roles.GUARD;
@@ -66,6 +68,9 @@ module.exports = {
                         break;
                     case roles.GUARD.value:
                         cur_room.memory.guardCount++;
+                        break;
+                    case roles.SCOUT.value:
+                        cur_room.memory.scoutCount++;
                         break;
                 }
             }
@@ -103,10 +108,9 @@ function GetMemoryObj(creeps, sources, creepRole) {
             return { role: creepRole, source: getHarvesterSource(creeps, sources) };
             break;
         case roles.BUILDER:
-            return { role: creepRole };
-            break;
         case roles.GUARD:
-            return {role: creepRole };
+        case roles.SCOUT:
+            return { role: creepRole };
             break;
     }
 }
@@ -119,6 +123,8 @@ function GetParts(role, nrg) {
             return getBuilderParts(nrg);
         case roles.GUARD:
             return getGuardParts(nrg);
+        case roles.SCOUT:
+            return [WORK, CLAIM, MOVE, MOVE];
     }
 }
 //generate a name for the creep

@@ -1,3 +1,4 @@
+var settings = require('_Settings');
 var tasks = require('creepTasks');
 var roles = require('creepRoles');
 
@@ -54,7 +55,7 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
     
     var towersNeedEnergy = [];
     for(i = 0; i < towers.length; i++)
-        if (towers[i].energy < towers[i].energyCapacity / 2)
+        if (towers[i].energy < 500)
             towersNeedEnergy.push(towers[i]);
     if (towersNeedEnergy.length > 0) {
         var tower = creep.pos.findClosestByPath(towersNeedEnergy);

@@ -7,6 +7,7 @@ var tasks = require('creepTasks');
 var harvester = require('harvestStuff');
 var builder = require('buildStuff');
 var guard = require('guardStuff');
+var scout = require('scoutStuff');
 
 var directions = [
         TOP,
@@ -24,52 +25,66 @@ var pickRandomMove = function () {
     return directions[Math.floor(Math.random() * directions.length)];
 }
 module.exports.loop = function () {
+    var _sources = [];
+    var _spawns = [];
+    var _creeps = [];
+    
+    var _structs = [];
+    var _extensions = [];
+    var _towers = [];
+    var _storages = [];
+    var _hostiles = [];
+    
+    var _scoutCount = 0;
+    var _harvesterCount = 0;
     
     for(var r in Game.rooms) {
-        //i like to grab all these variables straight away and pass them around to the different functions.
-        //this reduces CPU cost. Might be a good idea to eventually store in the room prototype/memory
+        var room = Game.rooms[r];
+        _sources = _sources.concat(room.find(FIND_SOURCES));
+        _spawns = _spawns.concat(room.find(FIND_MY_SPAWNS));
+        _creeps = _creeps.concat(room.find(FIND_MY_CREEPS));
+        _structs = _structs.concat(room.find(FIND_MY_STRUCTURES));
+        _hostiles = _hostiles.concat(room.find(FIND_HOSTILE_CREEPS));
+    }
+    var creeps = room.find(FIND_MY_CREEPS);
+    for(i = 0; i < creeps.length; i++)
+    {
+        if (creeps[i].memory.role.value == roles.SCOUT.value)
+            _scoutCount++;
+        if (creeps[i].memory.role.value == roles.HARVESTER.value)
+            _harvesterCount++;
+    }
+    
+    for(var i in _structs) {
+        if (_structs[i].structureType == STRUCTURE_EXTENSION)
+            _extensions.push(_structs[i]);
+        if (_structs[i].structureType == STRUCTURE_TOWER)
+            _towers.push(_structs[i]);
+        if (_structs[i].structureType == STRUCTURE_STORAGE)
+            _storages.push(_structs[i]);
+    }
+    
+    Memory.scoutCount = _scoutCount;
+    Memory.harvesterCount = _harvesterCount;
+    console.log(Memory.scoutCount);
+    
+    
+    for(var r in Game.rooms) {
         var _room = Game.rooms[r];
-        var _creeps = _room.find(FIND_MY_CREEPS);
-        var _spawns = _room.find(FIND_MY_SPAWNS);
-        var _sources = _room.find(FIND_SOURCES);
         var _constSites = _room.find(FIND_MY_CONSTRUCTION_SITES);
-        var _extensions = [];
-        var _towers = [];
-        var _storages = [];
         var _hostiles = _room.find(FIND_HOSTILE_CREEPS);
-        var _walls = [];
-        var _ramparts = [];
-        var structs = _room.find(FIND_MY_STRUCTURES);
-        
-        
-        
-        //some of the structures don't work with the find
-        for(var i in structs) {
-            if (structs[i].structureType == STRUCTURE_EXTENSION)
-                _extensions.push(structs[i]);
-            if (structs[i].structureType == STRUCTURE_TOWER)
-                _towers.push(structs[i]);
-            if (structs[i].structureType == STRUCTURE_STORAGE)
-                _storages.push(structs[i]);
-            if (structs[i].structureType == "constructedWall")
-                _walls.push(structs[i]);
-            if (structs[i].structureType == STRUCTURE_RAMPART)
-                _ramparts.push(structs[i]);
-            if (structs[i].structureType == STRUCTURE_ROAD)
-                _roads.add(structs[i]);
-        }
-        
-        
-        //if (Game.time % 1000 == 0)
-        //    buildRoads(_room, _spawns, _sources, _extensions, _storages);
+
+        // if (Game.time % 10 == 0)
+        //     buildRoads(_room, _spawns, _sources, _extensions, _storages);
         //clearSites(_constSites);
         
         //do we need to update the count for everything? (creep died, suicide, etc)
         var updateCounts = false;
-        if (_creeps.length != _room.memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount) {
+        if (_creeps.length != _room.memory.harvesterCount + _room.memory.builderCount + _room.memory.guardCount + Memory.scoutCount) {
             _room.memory.harvesterCount = 0;
             _room.memory.builderCount = 0;
             _room.memory.guardCount = 0;
+            Memory.scoutCount = 0;
             updateCounts = true;
         }
         
@@ -94,6 +109,11 @@ module.exports.loop = function () {
                         _room.memory.guardCount++;
                     guard.Work(_creeps[i]);
                     break;
+                case roles.SCOUT.value:
+                    if (updateCounts == true)
+                        _room.memory.scoutCount++;
+                    scout.Work(_creeps[i]);
+                    break;
             }
         }
         
@@ -105,16 +125,6 @@ module.exports.loop = function () {
                     removedCount++;
                     delete Memory.creeps[i];
                 }
-            }
-        }
-        for (var i in Memory.rooms) {
-            if (!Game.rooms[i]) {
-                delete Memory.rooms[i];
-            }
-        }
-        for (var i in Memory.spawns) {
-            if (!Game.spawns[i]) {
-                delete Memory.spawns[i];
             }
         }
         
@@ -136,41 +146,44 @@ module.exports.loop = function () {
                            obj.structureType == STRUCTURE_RAMPART;
                 }
             });
-            //console.log(structsToMaintain.length);
             towersRepairStructures(_towers, structsToMaintain);
         }
     }
 }
 
 function towersRepairStructures(towers, structures) {
-    var structToUpdate = structures[0];
     for (c = 0; c < towers.length; c++) {
+        var structToUpdate;
+        
         for(var i = 0; i < structures.length; i++) {
             var hits = structures[i].hits;
-            var minHits = 0;
-            var needsRepair = false;
-            switch(structures[i].structureType) {
-                case STRUCTURE_ROAD:
-                    minHits = settings.MIN_ROAD_HITS;
-                    break;
-                case STRUCTURE_WALL:
-                    minHits = settings.MIN_WALL_HITS;
-                    break;
-                case STRUCTURE_RAMPART:
-                    minHits = settings.MIN_RAMPART_HITS;
-                    break;
-            }
-            //console.log("Hits: " + hits + " MinHits: " + minHits);
-            needsRepair = hits < minHits;
-            if (structToUpdate !== undefined)
-                if (needsRepair === true && hits < structToUpdate.hits)
+            var minHits = getMinHitsForStruct(structures[i]);
+            var needsRepair = hits < minHits;
+            
+            if (needsRepair === true) {
+                if (structToUpdate === undefined)
                     structToUpdate = structures[i];
+                if (hits < structToUpdate.hits) {
+                    structToUpdate = structures[i];
+                }
+            }
+            
         }
         if (towers[c].energy > settings.MIN_TOWER_ENERGY_FOR_UPGRADE) {
-            //console.log(structToUpdate);
             towers[c].repair(structToUpdate);
         }
     }
+}
+
+function getMinHitsForStruct(structure) {
+    var minHits = 0;
+    if (structure.structureType == "road")
+        minHits = settings.MIN_ROAD_HITS;
+    else if (structure.structureType == "constructedWall")
+        minHits = settings.MIN_WALL_HITS;
+    else if (structure.structureType == "rampart")
+        minHits = settings.MIN_RAMPART_HITS;
+    return minHits;
 }
 
 function clearSites(sites) {

@@ -6,5 +6,6 @@ module.exports = {
     GATHER_ENERGY: 3,
     BUILD_STRUCTURE: 4,
     UPGRADE_CONTROLLER: 5,
-    DELIVER_RESOURCE: 6
+    DELIVER_RESOURCE: 6,
+    SCOUT_ROOMS: 7
 };
