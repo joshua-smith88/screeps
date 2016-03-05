@@ -9,7 +9,7 @@ module.exports = {
             return;
             
         //if we have enough units in the room, do nothing and save some CPU
-        if (Memory.harvesterCount >= room_sources * minHarvesters &&
+        if (Memory.harvesterCount >= minHarvesters &&
             cur_room.memory.builderCount >= settings.BUILDER_ROOM_MAX &&
             cur_room.memory.guardCount >= settings.GUARD_ROOM_MAX &&
             Memory.scoutCount >= settings.SCOUT_MAX)
