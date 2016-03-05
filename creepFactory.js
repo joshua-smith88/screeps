@@ -4,7 +4,6 @@ var roles = require('creepRoles');
 module.exports = { 
     ProcessQueue: function (my_creeps, cur_room, room_spawns, room_sources, construction_sites) {
         var minHarvesters = room_sources.length * settings.HARVESTERS_PER_SOURCE;
-
         //if there's not enough energy, do nothing. Save some CPU
         if (cur_room.energyAvailable < settings.MIN_UNIT_ENERGY)
             return;
@@ -61,7 +60,7 @@ module.exports = {
                 spawn.createCreep(bodyParts, name, mem);
                 switch(mem.role.value) {
                     case roles.HARVESTER.value:
-                        cur_room.memory.harvesterCount++;
+                        Memory.harvesterCount++;
                         break;
                     case roles.BUILDER.value:
                         cur_room.memory.builderCount++;
@@ -70,7 +69,7 @@ module.exports = {
                         cur_room.memory.guardCount++;
                         break;
                     case roles.SCOUT.value:
-                        cur_room.memory.scoutCount++;
+                        Memory.scoutCount++;
                         break;
                 }
             }

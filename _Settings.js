@@ -4,7 +4,7 @@ module.exports = {
     BUILDER_ROOM_MAX: 2,
     GUARD_ROOM_MAX: 6,
     GUARD_ROOM_PATROL: 0,
-    //SCOUT_MAX: 1,
+    SCOUT_MAX: 1,
     
     MIN_UNIT_ENERGY: 250, //this is the bare minimum energy we want to use to create a harvester to get things started.
     SPAWN_ENERGY_CAPACITY: 300,

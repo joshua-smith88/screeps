@@ -11,11 +11,9 @@ module.exports = {
             var closestSource = creep.pos.findClosestByPath(sources);
             if (!creep.pos.isNearTo(closestSource))
                 creep.moveTo(closestSource);
-            //console.log(JSON.stringify(closestSource));
         } else {
             var exit = creep.room.findExitTo('W11N12');
             var closest = creep.pos.findClosestByRange(exit);
-            //var exit = curRoom.pos.findClosestByRange(curRoom.findExitTo('W11N12'));
             creep.moveTo(closest);
         }
     }
