@@ -69,7 +69,6 @@ function restockResource(creep, room, spawns, extensions, towers, storages) {
         if (storages[i].store.energy < storages[i].storeCapacity)
             storagesNeedEnergy.push(storages[i]);
     
-    //console.log(storagesNeedEnergy.length);
     if (storagesNeedEnergy.length > 0) {
         var store = creep.pos.findClosestByPath(storagesNeedEnergy);
         moveOrRestock(creep, store);

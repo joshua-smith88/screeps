@@ -44,7 +44,7 @@ module.exports = {
                 else if (Memory.scoutCount < settings.SCOUT_MAX && nrg >= settings.MIN_SCOUT_COST)
                     role = roles.SCOUT;
             }
-            console.log(JSON.stringify(role));
+            
             //if we are under attack, prioritize building more guards, and build up to the room max
             if (cur_room.find(FIND_HOSTILE_CREEPS).length > 0 && cur_room.memory.guardCount < settings.GUARD_ROOM_MAX)
                 role = roles.GUARD;

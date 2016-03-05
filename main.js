@@ -66,7 +66,6 @@ module.exports.loop = function () {
     
     Memory.scoutCount = _scoutCount;
     Memory.harvesterCount = _harvesterCount;
-    console.log(Memory.scoutCount);
     
     
     for(var r in Game.rooms) {
