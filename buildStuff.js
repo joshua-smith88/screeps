@@ -2,7 +2,7 @@ var tasks = require('creepTasks');
 var settings = require('_Settings');
 
 module.exports = {
-    Work: function (creep, room, spawns, sites, storages, extensions, towers) {
+    Work: function (creep, room, spawns, sites, storages, sources, extensions, towers) {
         var storageEnergy = 0;
         for(i = 0; i < storages.length; i++) {
             storageEnergy += storages[i].store.energy;

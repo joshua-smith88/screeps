@@ -21,9 +21,6 @@ var directions = [
     ];
 var center = { x: 26, y: 26 }
 
-var pickRandomMove = function () {
-    return directions[Math.floor(Math.random() * directions.length)];
-}
 module.exports.loop = function () {
     var _sources = [];
     var _spawns = [];
@@ -48,8 +45,17 @@ module.exports.loop = function () {
         _structs = _structs.concat(room.find(FIND_MY_STRUCTURES));
         _hostiles = _hostiles.concat(room.find(FIND_HOSTILE_CREEPS));
     }
+    for(var i in _structs) {
+        if (_structs[i].structureType == STRUCTURE_EXTENSION)
+            _extensions.push(_structs[i]);
+        if (_structs[i].structureType == STRUCTURE_TOWER)
+            _towers.push(_structs[i]);
+        if (_structs[i].structureType == STRUCTURE_STORAGE)
+            _storages.push(_structs[i]);
+    }
 
-
+    //console.log(JSON.stringify(_storages));
+    
     var updateCounts = false;
     if (_creeps.length != Memory.harvesterCount + Memory.builderCount + Memory.guardCount + Memory.scoutCount) {
         Memory.harvesterCount = 0;
@@ -65,6 +71,10 @@ module.exports.loop = function () {
             }
         }
     }
+    for(var i in Memory.rooms) {
+        if (!Game.rooms[i])
+            delete Memory.rooms[i];
+    }
     if (updateCounts);
     {
         for(i = 0; i < _creeps.length; i++)
@@ -78,14 +88,6 @@ module.exports.loop = function () {
             if (_creeps[i].memory.role.value == roles.GUARD.value)
                 _guardCount++;
         }
-    }
-    for(var i in _structs) {
-        if (_structs[i].structureType == STRUCTURE_EXTENSION)
-            _extensions.push(_structs[i]);
-        if (_structs[i].structureType == STRUCTURE_TOWER)
-            _towers.push(_structs[i]);
-        if (_structs[i].structureType == STRUCTURE_STORAGE)
-            _storages.push(_structs[i]);
     }
     
     Memory.scoutCount = _scoutCount;
@@ -108,7 +110,7 @@ module.exports.loop = function () {
         for(var i in _creeps) {
             switch(_creeps[i].memory.role.value) {
                 case roles.HARVESTER.value:
-                    harvester.Work(_creeps[i], _room, _spawns, _extensions, _towers, _storages);
+                    harvester.Work(_creeps[i], _room, _spawns, _sources, _extensions, _towers, _storages);
                     break;
                 case roles.BUILDER.value:
                     if (_hostiles.length <= 0) { //freeze the builders if under attack - we need energy to build guards
