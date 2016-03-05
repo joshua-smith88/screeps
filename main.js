@@ -24,8 +24,8 @@ var pickRandomMove = function () {
     return directions[Math.floor(Math.random() * directions.length)];
 }
 module.exports.loop = function () {
+    
     for(var r in Game.rooms) {
-
         //i like to grab all these variables straight away and pass them around to the different functions.
         //this reduces CPU cost. Might be a good idea to eventually store in the room prototype/memory
         var _room = Game.rooms[r];
@@ -40,6 +40,7 @@ module.exports.loop = function () {
         var _walls = [];
         var _ramparts = [];
         var structs = _room.find(FIND_MY_STRUCTURES);
+        
         
         
         //some of the structures don't work with the find
@@ -58,8 +59,9 @@ module.exports.loop = function () {
                 _roads.add(structs[i]);
         }
         
-        if (Game.time % 1000 == 0)
-            buildRoads(_room, _spawns, _sources, _extensions, _storages);
+        
+        //if (Game.time % 1000 == 0)
+        //    buildRoads(_room, _spawns, _sources, _extensions, _storages);
         //clearSites(_constSites);
         
         //do we need to update the count for everything? (creep died, suicide, etc)
@@ -105,6 +107,16 @@ module.exports.loop = function () {
                 }
             }
         }
+        for (var i in Memory.rooms) {
+            if (!Game.rooms[i]) {
+                delete Memory.rooms[i];
+            }
+        }
+        for (var i in Memory.spawns) {
+            if (!Game.spawns[i]) {
+                delete Memory.spawns[i];
+            }
+        }
         
         //run the creep factory
         factory.ProcessQueue(_creeps, _room, _spawns, _sources, _constSites);
@@ -116,17 +128,47 @@ module.exports.loop = function () {
                 _towers[i].attack(_hostiles[0]);
             }
         } else {
-            var rampart = _ramparts[0];
-            for (i = 1; i < _ramparts.length; i++) {
-                if (_ramparts[i].hits < rampart.hits)
-                    rampart = _ramparts[i];
-            }
-            if (rampart !== undefined && (rampart.ticksToDecay < 10 || rampart.hits < 25000)) {
-                for(i = 0; i < _towers.length; i++) {
-                    if (_towers[i].energy > _towers[i].energyCapacity / 10)
-                        _towers[i].repair(rampart);
+            
+            var structsToMaintain = _room.find(FIND_STRUCTURES, {
+                filter: function(obj) {
+                    return obj.structureType == STRUCTURE_ROAD ||
+                           obj.structureType == STRUCTURE_WALL ||
+                           obj.structureType == STRUCTURE_RAMPART;
                 }
+            });
+            //console.log(structsToMaintain.length);
+            towersRepairStructures(_towers, structsToMaintain);
+        }
+    }
+}
+
+function towersRepairStructures(towers, structures) {
+    var structToUpdate = structures[0];
+    for (c = 0; c < towers.length; c++) {
+        for(var i = 0; i < structures.length; i++) {
+            var hits = structures[i].hits;
+            var minHits = 0;
+            var needsRepair = false;
+            switch(structures[i].structureType) {
+                case STRUCTURE_ROAD:
+                    minHits = settings.MIN_ROAD_HITS;
+                    break;
+                case STRUCTURE_WALL:
+                    minHits = settings.MIN_WALL_HITS;
+                    break;
+                case STRUCTURE_RAMPART:
+                    minHits = settings.MIN_RAMPART_HITS;
+                    break;
             }
+            //console.log("Hits: " + hits + " MinHits: " + minHits);
+            needsRepair = hits < minHits;
+            if (structToUpdate !== undefined)
+                if (needsRepair === true && hits < structToUpdate.hits)
+                    structToUpdate = structures[i];
+        }
+        if (towers[c].energy > settings.MIN_TOWER_ENERGY_FOR_UPGRADE) {
+            //console.log(structToUpdate);
+            towers[c].repair(structToUpdate);
         }
     }
 }
